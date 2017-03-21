@@ -139,7 +139,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             if (sym == null)
                 ats = null;
-            Debug.Assert(ats == null || sym.parent == ats.getAggregate());
+            Debug.Assert(ats == null || sym.parent == ats.GetAggregate());
             _sym = sym;
             _ats = ats;
         }
@@ -252,7 +252,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 ats = null;
                 typeArgs = null;
             }
-            Debug.Assert(ats == null || mps != null && mps.getClass() == ats.getAggregate());
+            Debug.Assert(ats == null || mps != null && mps.getClass() == ats.GetAggregate());
             base.Set(mps, ats);
             TypeArgs = typeArgs;
         }

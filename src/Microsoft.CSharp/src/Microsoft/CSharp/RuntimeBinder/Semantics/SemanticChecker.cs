@@ -24,7 +24,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         // Generate an error if CType is static.
         public bool CheckForStaticClass(Symbol symCtx, CType CType, ErrorCode err)
         {
-            if (!CType.isStaticClass())
+            if (!CType.IsStaticClass())
                 return false;
             ReportStaticClassError(symCtx, CType, err);
             return true;
@@ -33,7 +33,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         public virtual ACCESSERROR CheckAccess2(Symbol symCheck, AggregateType atsCheck, Symbol symWhere, CType typeThru)
         {
             Debug.Assert(symCheck != null);
-            Debug.Assert(atsCheck == null || symCheck.parent == atsCheck.getAggregate());
+            Debug.Assert(atsCheck == null || symCheck.parent == atsCheck.GetAggregate());
             Debug.Assert(typeThru == null ||
                    typeThru.IsAggregateType() ||
                    typeThru.IsTypeParameterType() ||
@@ -73,7 +73,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // For members of AGGSYMs, atsCheck should always be specified!
             Debug.Assert(atsCheck != null);
 
-            if (atsCheck.getAggregate().IsSource())
+            if (atsCheck.GetAggregate().IsSource())
             {
                 // We already check the "at least as accessible as" rules.
                 // Does this always work for generics?
@@ -164,7 +164,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private ACCESSERROR CheckAccessCore(Symbol symCheck, AggregateType atsCheck, Symbol symWhere, CType typeThru)
         {
             Debug.Assert(symCheck != null);
-            Debug.Assert(atsCheck == null || symCheck.parent == atsCheck.getAggregate());
+            Debug.Assert(atsCheck == null || symCheck.parent == atsCheck.GetAggregate());
             Debug.Assert(typeThru == null ||
                    typeThru.IsAggregateType() ||
                    typeThru.IsTypeParameterType() ||
@@ -279,7 +279,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     // agg or a CType derived from an instantiation of agg. In this case
                     // all that matters is that agg is in the base AggregateSymbol chain of atsThru. The
                     // actual AGGTYPESYMs involved don't matter.
-                    if (atsThru == null || atsThru.getAggregate().FindBaseAgg(agg))
+                    if (atsThru == null || atsThru.GetAggregate().FindBaseAgg(agg))
                     {
                         return ACCESSERROR.ACCESSERROR_NOERROR;
                     }

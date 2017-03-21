@@ -281,7 +281,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 flags |= EXPRFLAG.EXF_IMPLICITTHIS;
             }
-            if (type != null && type.isStructType())
+            if (type != null && type.IsStructType())
             {
                 flags |= EXPRFLAG.EXF_LVALUE;
             }
@@ -297,7 +297,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         public EXPRBOUNDLAMBDA CreateAnonymousMethod(AggregateType delegateType)
         {
-            Debug.Assert(delegateType == null || delegateType.isDelegateType());
+            Debug.Assert(delegateType == null || delegateType.IsDelegateType());
             EXPRBOUNDLAMBDA rval = new EXPRBOUNDLAMBDA();
             rval.kind = ExpressionKind.EK_BOUNDLAMBDA;
             rval.type = delegateType;
@@ -434,15 +434,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             Debug.Assert(op1?.type != null);
             Debug.Assert(op2?.type != null);
-            Debug.Assert(op1.type.isPredefType(PredefinedType.PT_STRING) || op2.type.isPredefType(PredefinedType.PT_STRING));
+            Debug.Assert(op1.type.IsPredefType(PredefinedType.PT_STRING) || op2.type.IsPredefType(PredefinedType.PT_STRING));
 
             CType type = op1.type;
-            if (!type.isPredefType(PredefinedType.PT_STRING))
+            if (!type.IsPredefType(PredefinedType.PT_STRING))
             {
                 type = op2.type;
             }
 
-            Debug.Assert(type.isPredefType(PredefinedType.PT_STRING));
+            Debug.Assert(type.IsPredefType(PredefinedType.PT_STRING));
 
             EXPRCONCAT rval = new EXPRCONCAT();
             rval.kind = ExpressionKind.EK_CONCAT;
@@ -512,7 +512,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType pType = pTypeExpr.TypeOrNamespace.AsType();
             bool bIsError = false;
 
-            if (pType.isEnumType())
+            if (pType.IsEnumType())
             {
                 // For enum types, we create a constant that has the default value
                 // as an object pointer.
@@ -521,18 +521,18 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return expr;
             }
 
-            switch (pType.fundType())
+            switch (pType.FundType())
             {
                 default:
                     bIsError = true;
                     break;
 
-                case FUNDTYPE.FT_PTR:
+                case FundType.FT_Pointer:
                     {
                         CType nullType = GetTypes().GetNullType();
 
                         // It looks like this if is always false ...
-                        if (nullType.fundType() == pType.fundType())
+                        if (nullType.FundType() == pType.FundType())
                         {
                             // Create a constant here.
 
@@ -546,34 +546,34 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         return (cast);
                     }
 
-                case FUNDTYPE.FT_REF:
-                case FUNDTYPE.FT_I1:
-                case FUNDTYPE.FT_U1:
-                case FUNDTYPE.FT_I2:
-                case FUNDTYPE.FT_U2:
-                case FUNDTYPE.FT_I4:
-                case FUNDTYPE.FT_U4:
-                case FUNDTYPE.FT_I8:
-                case FUNDTYPE.FT_U8:
-                case FUNDTYPE.FT_R4:
-                case FUNDTYPE.FT_R8:
+                case FundType.FT_Reference:
+                case FundType.FT_I1:
+                case FundType.FT_U1:
+                case FundType.FT_I2:
+                case FundType.FT_U2:
+                case FundType.FT_I4:
+                case FundType.FT_U4:
+                case FundType.FT_I8:
+                case FundType.FT_U8:
+                case FundType.FT_R4:
+                case FundType.FT_R8:
                     {
-                        EXPRCONSTANT expr = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.constValKind()));
-                        EXPRCONSTANT exprInOriginal = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.constValKind()));
+                        EXPRCONSTANT expr = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.ConstValKind()));
+                        EXPRCONSTANT exprInOriginal = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.ConstValKind()));
                         exprInOriginal.SetOptionalConstructorCall(pOptionalOriginalConstructorCall);
                         return expr;
                     }
-                case FUNDTYPE.FT_STRUCT:
-                    if (pType.isPredefType(PredefinedType.PT_DECIMAL))
+                case FundType.FT_Struct:
+                    if (pType.IsPredefType(PredefinedType.PT_DECIMAL))
                     {
-                        EXPRCONSTANT expr = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.constValKind()));
-                        EXPRCONSTANT exprOriginal = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.constValKind()));
+                        EXPRCONSTANT expr = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.ConstValKind()));
+                        EXPRCONSTANT exprOriginal = CreateConstant(pType, ConstValFactory.GetDefaultValue(pType.ConstValKind()));
                         exprOriginal.SetOptionalConstructorCall(pOptionalOriginalConstructorCall);
                         return expr;
                     }
                     break;
 
-                case FUNDTYPE.FT_VAR:
+                case FundType.FT_Var:
                     break;
             }
 

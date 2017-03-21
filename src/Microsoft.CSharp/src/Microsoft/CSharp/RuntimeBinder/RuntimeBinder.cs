@@ -992,7 +992,7 @@ namespace Microsoft.CSharp.RuntimeBinder
 
             EXPRFLAG flags = EXPRFLAG.EXF_USERCALLABLE;
             // If its a delegate, mark that on the memgroup.
-            if (Name == SpecialNames.Invoke && callingObject.type.isDelegateType())
+            if (Name == SpecialNames.Invoke && callingObject.type.IsDelegateType())
             {
                 flags |= EXPRFLAG.EXF_DELEGATE;
             }
@@ -1151,7 +1151,7 @@ namespace Microsoft.CSharp.RuntimeBinder
             ArgumentObject[] arguments,
             Dictionary<int, LocalVariableSymbol> dictionary)
         {
-            if (payload is InvokeBinder && !callingObject.type.isDelegateType())
+            if (payload is InvokeBinder && !callingObject.type.IsDelegateType())
             {
                 throw Error.BindInvokeFailedNonDelegate();
             }

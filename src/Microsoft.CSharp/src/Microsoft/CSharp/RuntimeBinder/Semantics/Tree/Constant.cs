@@ -19,7 +19,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             get
             {
-                return Val.IsZero(this.type.constValKind());
+                return Val.IsZero(this.type.ConstValKind());
             }
         }
         public bool isZero() { return IsZero; }
@@ -43,19 +43,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             get
             {
-                FUNDTYPE ft = type.fundType();
+                FundType ft = type.FundType();
                 switch (ft)
                 {
-                    case FUNDTYPE.FT_I8:
-                    case FUNDTYPE.FT_U8:
+                    case FundType.FT_I8:
+                    case FundType.FT_U8:
                         return _val.longVal;
-                    case FUNDTYPE.FT_U4:
+                    case FundType.FT_U4:
                         return _val.uiVal;
-                    case FUNDTYPE.FT_I1:
-                    case FUNDTYPE.FT_I2:
-                    case FUNDTYPE.FT_I4:
-                    case FUNDTYPE.FT_U1:
-                    case FUNDTYPE.FT_U2:
+                    case FundType.FT_I1:
+                    case FundType.FT_I2:
+                    case FundType.FT_I4:
+                    case FundType.FT_U1:
+                    case FundType.FT_U2:
                         return _val.iVal;
                     default:
                         Debug.Assert(false, "Bad fundType in getI64Value");

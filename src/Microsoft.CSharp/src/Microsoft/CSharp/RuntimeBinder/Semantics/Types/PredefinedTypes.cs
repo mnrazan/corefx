@@ -53,7 +53,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private AggregateSymbol DelayLoadPredefSym(PredefinedType pt)
         {
             CType type = _runtimeBinderSymbolTable.GetCTypeFromType(PredefinedTypeFacts.GetAssociatedSystemType(pt));
-            AggregateSymbol sym = type.getAggregate();
+            AggregateSymbol sym = type.GetAggregate();
 
             // If we failed to load this thing, we have problems.
             if (sym == null)
@@ -301,7 +301,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             return s_pdTypes[(int)type].required;
         }
 
-        internal static FUNDTYPE GetFundType(PredefinedType type)
+        internal static FundType GetFundType(PredefinedType type)
         {
             return s_pdTypes[(int)type].fundType;
         }
@@ -409,10 +409,10 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             internal readonly PredefinedType type;
             internal readonly string name;
             internal readonly bool required;
-            internal readonly FUNDTYPE fundType;
+            internal readonly FundType fundType;
             internal readonly Type AssociatedSystemType;
 
-            internal PredefinedTypeInfo(PredefinedType type, Type associatedSystemType, string name, bool required, int arity, AggKindEnum aggKind, FUNDTYPE fundType, bool inMscorlib)
+            internal PredefinedTypeInfo(PredefinedType type, Type associatedSystemType, string name, bool required, int arity, AggKindEnum aggKind, FundType fundType, bool inMscorlib)
             {
                 this.type = type;
                 this.name = name;
@@ -422,27 +422,27 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             internal PredefinedTypeInfo(PredefinedType type, Type associatedSystemType, string name, bool required, int arity, bool inMscorlib)
-                : this(type, associatedSystemType, name, required, arity, AggKindEnum.Class, FUNDTYPE.FT_REF, inMscorlib)
+                : this(type, associatedSystemType, name, required, arity, AggKindEnum.Class, FundType.FT_Reference, inMscorlib)
             {
             }
         }
 
         private static readonly PredefinedTypeInfo[] s_pdTypes = new PredefinedTypeInfo[] {
-            new PredefinedTypeInfo(PredefinedType.PT_BYTE,   typeof(Byte), "System.Byte", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_U1, true),
-            new PredefinedTypeInfo(PredefinedType.PT_SHORT,  typeof(Int16), "System.Int16", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_I2, true),
-            new PredefinedTypeInfo(PredefinedType.PT_INT,    typeof(Int32), "System.Int32", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_I4, true),
-            new PredefinedTypeInfo(PredefinedType.PT_LONG,   typeof(Int64), "System.Int64", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_I8, true),
-            new PredefinedTypeInfo(PredefinedType.PT_FLOAT,  typeof(Single), "System.Single", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_R4, true),
-            new PredefinedTypeInfo(PredefinedType.PT_DOUBLE, typeof(Double), "System.Double", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_R8, true),
-            new PredefinedTypeInfo(PredefinedType.PT_DECIMAL, typeof(Decimal), "System.Decimal", false, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
-            new PredefinedTypeInfo(PredefinedType.PT_CHAR,   typeof(Char), "System.Char", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_U2, true),
-            new PredefinedTypeInfo(PredefinedType.PT_BOOL,   typeof(Boolean), "System.Boolean", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_I1, true),
-            new PredefinedTypeInfo(PredefinedType.PT_SBYTE,  typeof(SByte), "System.SByte", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_I1, true),
-            new PredefinedTypeInfo(PredefinedType.PT_USHORT, typeof(UInt16), "System.UInt16", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_U2, true),
-            new PredefinedTypeInfo(PredefinedType.PT_UINT,   typeof(UInt32), "System.UInt32", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_U4, true),
-            new PredefinedTypeInfo(PredefinedType.PT_ULONG,  typeof(UInt64), "System.UInt64", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_U8, true),
-            new PredefinedTypeInfo(PredefinedType.PT_INTPTR,  typeof(IntPtr), "System.IntPtr", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
-            new PredefinedTypeInfo(PredefinedType.PT_UINTPTR, typeof(UIntPtr), "System.UIntPtr", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_BYTE,   typeof(Byte), "System.Byte", true, 0, AggKindEnum.Struct, FundType.FT_U1, true),
+            new PredefinedTypeInfo(PredefinedType.PT_SHORT,  typeof(Int16), "System.Int16", true, 0, AggKindEnum.Struct, FundType.FT_I2, true),
+            new PredefinedTypeInfo(PredefinedType.PT_INT,    typeof(Int32), "System.Int32", true, 0, AggKindEnum.Struct, FundType.FT_I4, true),
+            new PredefinedTypeInfo(PredefinedType.PT_LONG,   typeof(Int64), "System.Int64", true, 0, AggKindEnum.Struct, FundType.FT_I8, true),
+            new PredefinedTypeInfo(PredefinedType.PT_FLOAT,  typeof(Single), "System.Single", true, 0, AggKindEnum.Struct, FundType.FT_R4, true),
+            new PredefinedTypeInfo(PredefinedType.PT_DOUBLE, typeof(Double), "System.Double", true, 0, AggKindEnum.Struct, FundType.FT_R8, true),
+            new PredefinedTypeInfo(PredefinedType.PT_DECIMAL, typeof(Decimal), "System.Decimal", false, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
+            new PredefinedTypeInfo(PredefinedType.PT_CHAR,   typeof(Char), "System.Char", true, 0, AggKindEnum.Struct, FundType.FT_U2, true),
+            new PredefinedTypeInfo(PredefinedType.PT_BOOL,   typeof(Boolean), "System.Boolean", true, 0, AggKindEnum.Struct, FundType.FT_I1, true),
+            new PredefinedTypeInfo(PredefinedType.PT_SBYTE,  typeof(SByte), "System.SByte", true, 0, AggKindEnum.Struct, FundType.FT_I1, true),
+            new PredefinedTypeInfo(PredefinedType.PT_USHORT, typeof(UInt16), "System.UInt16", true, 0, AggKindEnum.Struct, FundType.FT_U2, true),
+            new PredefinedTypeInfo(PredefinedType.PT_UINT,   typeof(UInt32), "System.UInt32", true, 0, AggKindEnum.Struct, FundType.FT_U4, true),
+            new PredefinedTypeInfo(PredefinedType.PT_ULONG,  typeof(UInt64), "System.UInt64", true, 0, AggKindEnum.Struct, FundType.FT_U8, true),
+            new PredefinedTypeInfo(PredefinedType.PT_INTPTR,  typeof(IntPtr), "System.IntPtr", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
+            new PredefinedTypeInfo(PredefinedType.PT_UINTPTR, typeof(UIntPtr), "System.UIntPtr", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_OBJECT, typeof(Object), "System.Object", true, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_STRING, typeof(String), "System.String", true, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DELEGATE, typeof(Delegate), "System.Delegate", true, 0, true),
@@ -453,14 +453,14 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             new PredefinedTypeInfo(PredefinedType.PT_MONITOR, typeof(System.Threading.Monitor), "System.Threading.Monitor", true, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_VALUE,   typeof(ValueType), "System.ValueType", true, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_ENUM,    typeof(Enum), "System.Enum", true, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_DATETIME,    typeof(DateTime), "System.DateTime", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_DATETIME,    typeof(DateTime), "System.DateTime", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEBUGGABLEATTRIBUTE, typeof(DebuggableAttribute), "System.Diagnostics.DebuggableAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEBUGGABLEATTRIBUTE_DEBUGGINGMODES, typeof(DebuggableAttribute.DebuggingModes), "System.Diagnostics.DebuggableAttribute.DebuggingModes", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_IN,            typeof(System.Runtime.InteropServices.InAttribute), "System.Runtime.InteropServices.InAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_OUT,           typeof(System.Runtime.InteropServices.OutAttribute), "System.Runtime.InteropServices.OutAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_ATTRIBUTE, typeof(Attribute), "System.Attribute", true, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_ATTRIBUTEUSAGE, typeof(AttributeUsageAttribute), "System.AttributeUsageAttribute", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_ATTRIBUTETARGETS, typeof(AttributeTargets), "System.AttributeTargets", false, 0, AggKindEnum.Enum, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_ATTRIBUTETARGETS, typeof(AttributeTargets), "System.AttributeTargets", false, 0, AggKindEnum.Enum, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_OBSOLETE, typeof(ObsoleteAttribute), "System.ObsoleteAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_CONDITIONAL, typeof(ConditionalAttribute), "System.Diagnostics.ConditionalAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_CLSCOMPLIANT, typeof(CLSCompliantAttribute), "System.CLSCompliantAttribute", false, 0, true),
@@ -470,32 +470,32 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             new PredefinedTypeInfo(PredefinedType.PT_COMIMPORT, typeof(System.Runtime.InteropServices.ComImportAttribute), "System.Runtime.InteropServices.ComImportAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_FIELDOFFSET, typeof(System.Runtime.InteropServices.FieldOffsetAttribute), "System.Runtime.InteropServices.FieldOffsetAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_STRUCTLAYOUT, typeof(System.Runtime.InteropServices.StructLayoutAttribute), "System.Runtime.InteropServices.StructLayoutAttribute", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_LAYOUTKIND, typeof(System.Runtime.InteropServices.LayoutKind), "System.Runtime.InteropServices.LayoutKind", false, 0, AggKindEnum.Enum, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_LAYOUTKIND, typeof(System.Runtime.InteropServices.LayoutKind), "System.Runtime.InteropServices.LayoutKind", false, 0, AggKindEnum.Enum, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_MARSHALAS, typeof(System.Runtime.InteropServices.MarshalAsAttribute), "System.Runtime.InteropServices.MarshalAsAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DLLIMPORT, typeof(System.Runtime.InteropServices.DllImportAttribute), "System.Runtime.InteropServices.DllImportAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_INDEXERNAME, typeof(System.Runtime.CompilerServices.IndexerNameAttribute), "System.Runtime.CompilerServices.IndexerNameAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DECIMALCONSTANT, typeof(System.Runtime.CompilerServices.DecimalConstantAttribute), "System.Runtime.CompilerServices.DecimalConstantAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEFAULTVALUE, typeof(System.Runtime.InteropServices.DefaultParameterValueAttribute), "System.Runtime.InteropServices.DefaultParameterValueAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_UNMANAGEDFUNCTIONPOINTER, typeof(System.Runtime.InteropServices.UnmanagedFunctionPointerAttribute), "System.Runtime.InteropServices.UnmanagedFunctionPointerAttribute", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_CALLINGCONVENTION, typeof(System.Runtime.InteropServices.CallingConvention), "System.Runtime.InteropServices.CallingConvention", false, 0, AggKindEnum.Enum, FUNDTYPE.FT_I4, true),
-            new PredefinedTypeInfo(PredefinedType.PT_CHARSET, typeof(System.Runtime.InteropServices.CharSet), "System.Runtime.InteropServices.CharSet", false, 0, AggKindEnum.Enum, FUNDTYPE.FT_STRUCT, true),
-            new PredefinedTypeInfo(PredefinedType.PT_TYPEHANDLE, typeof(RuntimeTypeHandle), "System.RuntimeTypeHandle", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
-            new PredefinedTypeInfo(PredefinedType.PT_FIELDHANDLE, typeof(RuntimeFieldHandle), "System.RuntimeFieldHandle", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
-            new PredefinedTypeInfo(PredefinedType.PT_METHODHANDLE, typeof(RuntimeMethodHandle), "System.RuntimeMethodHandle", false, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_CALLINGCONVENTION, typeof(System.Runtime.InteropServices.CallingConvention), "System.Runtime.InteropServices.CallingConvention", false, 0, AggKindEnum.Enum, FundType.FT_I4, true),
+            new PredefinedTypeInfo(PredefinedType.PT_CHARSET, typeof(System.Runtime.InteropServices.CharSet), "System.Runtime.InteropServices.CharSet", false, 0, AggKindEnum.Enum, FundType.FT_Struct, true),
+            new PredefinedTypeInfo(PredefinedType.PT_TYPEHANDLE, typeof(RuntimeTypeHandle), "System.RuntimeTypeHandle", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
+            new PredefinedTypeInfo(PredefinedType.PT_FIELDHANDLE, typeof(RuntimeFieldHandle), "System.RuntimeFieldHandle", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
+            new PredefinedTypeInfo(PredefinedType.PT_METHODHANDLE, typeof(RuntimeMethodHandle), "System.RuntimeMethodHandle", false, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_G_DICTIONARY, typeof(Dictionary<,>), "System.Collections.Generic.Dictionary`2", false, 2, true),
-            new PredefinedTypeInfo(PredefinedType.PT_IASYNCRESULT, typeof(IAsyncResult), "System.IAsyncResult", false, 0, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_ASYNCCBDEL, typeof(AsyncCallback), "System.AsyncCallback",  false, 0, AggKindEnum.Delegate, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_IDISPOSABLE, typeof(IDisposable), "System.IDisposable",   true, 0, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_IENUMERABLE, typeof(System.Collections.IEnumerable), "System.Collections.IEnumerable", true, 0, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_IENUMERATOR, typeof(System.Collections.IEnumerator), "System.Collections.IEnumerator", true, 0, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_SYSTEMVOID, typeof(void), "System.Void", true, 0, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_IASYNCRESULT, typeof(IAsyncResult), "System.IAsyncResult", false, 0, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_ASYNCCBDEL, typeof(AsyncCallback), "System.AsyncCallback",  false, 0, AggKindEnum.Delegate, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_IDISPOSABLE, typeof(IDisposable), "System.IDisposable",   true, 0, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_IENUMERABLE, typeof(System.Collections.IEnumerable), "System.Collections.IEnumerable", true, 0, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_IENUMERATOR, typeof(System.Collections.IEnumerator), "System.Collections.IEnumerator", true, 0, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_SYSTEMVOID, typeof(void), "System.Void", true, 0, AggKindEnum.Struct, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_RUNTIMEHELPERS, typeof(System.Runtime.CompilerServices.RuntimeHelpers), "System.Runtime.CompilerServices.RuntimeHelpers", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_VOLATILEMOD, typeof(System.Runtime.CompilerServices.IsVolatile), "System.Runtime.CompilerServices.IsVolatile", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_COCLASS,    typeof(System.Runtime.InteropServices.CoClassAttribute), "System.Runtime.InteropServices.CoClassAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_ACTIVATOR,  typeof(Activator), "System.Activator",  false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_IENUMERABLE, typeof(IEnumerable<>), "System.Collections.Generic.IEnumerable`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_IENUMERATOR, typeof(IEnumerator<>), "System.Collections.Generic.IEnumerator`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_OPTIONAL, typeof(Nullable<>), "System.Nullable`1",  false, 1, AggKindEnum.Struct, FUNDTYPE.FT_STRUCT, true),
+            new PredefinedTypeInfo(PredefinedType.PT_G_IENUMERABLE, typeof(IEnumerable<>), "System.Collections.Generic.IEnumerable`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_G_IENUMERATOR, typeof(IEnumerator<>), "System.Collections.Generic.IEnumerator`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_G_OPTIONAL, typeof(Nullable<>), "System.Nullable`1",  false, 1, AggKindEnum.Struct, FundType.FT_Struct, true),
             new PredefinedTypeInfo(PredefinedType.PT_FIXEDBUFFER, typeof(System.Runtime.CompilerServices.FixedBufferAttribute), "System.Runtime.CompilerServices.FixedBufferAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEFAULTCHARSET, typeof(System.Runtime.InteropServices.DefaultCharSetAttribute), "System.Runtime.InteropServices.DefaultCharSetAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_COMPILATIONRELAXATIONS, typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute), "System.Runtime.CompilerServices.CompilationRelaxationsAttribute", false, 0, true),
@@ -513,11 +513,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             new PredefinedTypeInfo(PredefinedType.PT_ASSEMBLYVERSION, typeof(System.Reflection.AssemblyVersionAttribute), "System.Reflection.AssemblyVersionAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_ASSEMBLYCULTURE, typeof(System.Reflection.AssemblyCultureAttribute), "System.Reflection.AssemblyCultureAttribute", false, 0, true),
             // LINQ
-            new PredefinedTypeInfo(PredefinedType.PT_G_IQUERYABLE, typeof(System.Linq.IQueryable<>), "System.Linq.IQueryable`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, false),
-            new PredefinedTypeInfo(PredefinedType.PT_IQUERYABLE, typeof(System.Linq.IQueryable), "System.Linq.IQueryable", false, 0, AggKindEnum.Interface, FUNDTYPE.FT_REF, false),
+            new PredefinedTypeInfo(PredefinedType.PT_G_IQUERYABLE, typeof(System.Linq.IQueryable<>), "System.Linq.IQueryable`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, false),
+            new PredefinedTypeInfo(PredefinedType.PT_IQUERYABLE, typeof(System.Linq.IQueryable), "System.Linq.IQueryable", false, 0, AggKindEnum.Interface, FundType.FT_Reference, false),
             new PredefinedTypeInfo(PredefinedType.PT_STRINGBUILDER, typeof(System.Text.StringBuilder), "System.Text.StringBuilder", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_ICOLLECTION, typeof(ICollection<>), "System.Collections.Generic.ICollection`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_ILIST, typeof(IList<>), "System.Collections.Generic.IList`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, true),
+            new PredefinedTypeInfo(PredefinedType.PT_G_ICOLLECTION, typeof(ICollection<>), "System.Collections.Generic.ICollection`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, true),
+            new PredefinedTypeInfo(PredefinedType.PT_G_ILIST, typeof(IList<>), "System.Collections.Generic.IList`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, true),
             new PredefinedTypeInfo(PredefinedType.PT_EXTENSION, typeof(System.Runtime.CompilerServices.ExtensionAttribute), "System.Runtime.CompilerServices.ExtensionAttribute", false, 0, false),
             new PredefinedTypeInfo(PredefinedType.PT_G_EXPRESSION, typeof(System.Linq.Expressions.Expression<>), "System.Linq.Expressions.Expression`1", false, 1, false),
             new PredefinedTypeInfo(PredefinedType.PT_EXPRESSION, typeof(System.Linq.Expressions.Expression), "System.Linq.Expressions.Expression", false, 0, false),
@@ -547,13 +547,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             new PredefinedTypeInfo(PredefinedType.PT_MEMBERINFO, typeof(System.Reflection.MemberInfo), "System.Reflection.MemberInfo", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEBUGGERDISPLAY, typeof(DebuggerDisplayAttribute), "System.Diagnostics.DebuggerDisplayAttribute", false, 0, true),
             new PredefinedTypeInfo(PredefinedType.PT_DEBUGGERBROWSABLE, typeof(DebuggerBrowsableAttribute), "System.Diagnostics.DebuggerBrowsableAttribute", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_DEBUGGERBROWSABLESTATE, typeof(DebuggerBrowsableState), "System.Diagnostics.DebuggerBrowsableState", false, 0, AggKindEnum.Enum, FUNDTYPE.FT_I4, true),
+            new PredefinedTypeInfo(PredefinedType.PT_DEBUGGERBROWSABLESTATE, typeof(DebuggerBrowsableState), "System.Diagnostics.DebuggerBrowsableState", false, 0, AggKindEnum.Enum, FundType.FT_I4, true),
             new PredefinedTypeInfo(PredefinedType.PT_G_EQUALITYCOMPARER, typeof(EqualityComparer<>), "System.Collections.Generic.EqualityComparer`1", false, 1, true),
             new PredefinedTypeInfo(PredefinedType.PT_ELEMENTINITIALIZER, typeof(System.Linq.Expressions.ElementInit), "System.Linq.Expressions.ElementInit", false, 0, false),
 
             new PredefinedTypeInfo(PredefinedType.PT_MISSING, typeof(System.Reflection.Missing), "System.Reflection.Missing", false, 0, true),
-            new PredefinedTypeInfo(PredefinedType.PT_G_IREADONLYLIST, typeof(IReadOnlyList<>), "System.Collections.Generic.IReadOnlyList`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, false),
-            new PredefinedTypeInfo(PredefinedType.PT_G_IREADONLYCOLLECTION, typeof(IReadOnlyCollection<>), "System.Collections.Generic.IReadOnlyCollection`1", false, 1, AggKindEnum.Interface, FUNDTYPE.FT_REF, false),
+            new PredefinedTypeInfo(PredefinedType.PT_G_IREADONLYLIST, typeof(IReadOnlyList<>), "System.Collections.Generic.IReadOnlyList`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, false),
+            new PredefinedTypeInfo(PredefinedType.PT_G_IREADONLYCOLLECTION, typeof(IReadOnlyCollection<>), "System.Collections.Generic.IReadOnlyCollection`1", false, 1, AggKindEnum.Interface, FundType.FT_Reference, false),
         };
 
         private static readonly Dictionary<string, PredefinedType> s_pdTypeNames = CreatePredefinedTypeFacts();

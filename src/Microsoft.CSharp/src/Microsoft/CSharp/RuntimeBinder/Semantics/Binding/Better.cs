@@ -399,7 +399,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             Debug.Assert(b2a == a2b);
 
-            if (p1.isPredefined() && p2.isPredefined() &&
+            if (p1.IsPredefined() && p2.IsPredefined() &&
                 p1.getPredefType() <= PredefinedType.PT_OBJECT && p2.getPredefType() <= PredefinedType.PT_OBJECT)
             {
                 int c = s_betterConversionTable[(int)p1.getPredefType()][(int)p2.getPredefType()];

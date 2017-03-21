@@ -202,7 +202,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // If we have a cast to PredefinedType.PT_G_EXPRESSION and the thing that we're casting is 
             // a EXPRBOUNDLAMBDA that is an expression tree, then just visit the expression tree.
             if (pExpr.type != null &&
-                    pExpr.type.isPredefType(PredefinedType.PT_G_EXPRESSION) &&
+                    pExpr.type.IsPredefType(PredefinedType.PT_G_EXPRESSION) &&
                     pArgument.isBOUNDLAMBDA())
             {
                 return Visit(pArgument);
@@ -221,7 +221,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(expr != null);
             Debug.Assert(alwaysRewrite || currentAnonMeth != null);
             PREDEFMETH pdm;
-            if (expr.GetFirstArgument().type.isPredefType(PredefinedType.PT_STRING) && expr.GetSecondArgument().type.isPredefType(PredefinedType.PT_STRING))
+            if (expr.GetFirstArgument().type.IsPredefType(PredefinedType.PT_STRING) && expr.GetSecondArgument().type.IsPredefType(PredefinedType.PT_STRING))
             {
                 pdm = PREDEFMETH.PM_STRING_CONCAT_STRING_2;
             }
@@ -483,32 +483,32 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType convertL = null;
             CType convertR = null;
 
-            if (typeL.isEnumType())
+            if (typeL.IsEnumType())
             {
                 // We have already inserted casts if not lifted, so we should never see an enum.
                 Debug.Assert(expr.isLifted);
-                convertL = GetSymbolLoader().GetTypeManager().GetNullable(typeL.underlyingEnumType());
+                convertL = GetSymbolLoader().GetTypeManager().GetNullable(typeL.UnderlyingEnumType());
                 typeL = convertL;
                 didEnumConversion = true;
             }
-            else if (typeL.IsNullableType() && typeL.StripNubs().isEnumType())
+            else if (typeL.IsNullableType() && typeL.StripNubs().IsEnumType())
             {
                 Debug.Assert(expr.isLifted);
-                convertL = GetSymbolLoader().GetTypeManager().GetNullable(typeL.StripNubs().underlyingEnumType());
+                convertL = GetSymbolLoader().GetTypeManager().GetNullable(typeL.StripNubs().UnderlyingEnumType());
                 typeL = convertL;
                 didEnumConversion = true;
             }
-            if (typeR.isEnumType())
+            if (typeR.IsEnumType())
             {
                 Debug.Assert(expr.isLifted);
-                convertR = GetSymbolLoader().GetTypeManager().GetNullable(typeR.underlyingEnumType());
+                convertR = GetSymbolLoader().GetTypeManager().GetNullable(typeR.UnderlyingEnumType());
                 typeR = convertR;
                 didEnumConversion = true;
             }
-            else if (typeR.IsNullableType() && typeR.StripNubs().isEnumType())
+            else if (typeR.IsNullableType() && typeR.StripNubs().IsEnumType())
             {
                 Debug.Assert(expr.isLifted);
-                convertR = GetSymbolLoader().GetTypeManager().GetNullable(typeR.StripNubs().underlyingEnumType());
+                convertR = GetSymbolLoader().GetTypeManager().GetNullable(typeR.StripNubs().UnderlyingEnumType());
                 typeR = convertR;
                 didEnumConversion = true;
             }
@@ -532,7 +532,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             EXPR call = GenerateCall(pdm, newL, newR);
 
-            if (didEnumConversion && expr.type.StripNubs().isEnumType())
+            if (didEnumConversion && expr.type.StripNubs().IsEnumType())
             {
                 call = GenerateCall(PREDEFMETH.PM_EXPRESSION_CONVERT, call, CreateTypeOf(expr.type));
             }
@@ -565,15 +565,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR GenerateBuiltInUnaryOperator(PREDEFMETH pdm, EXPR pOriginalOperator, EXPR pOperator)
         {
             EXPR op = Visit(pOriginalOperator);
-            if (pOriginalOperator.type.IsNullableType() && pOriginalOperator.type.StripNubs().isEnumType())
+            if (pOriginalOperator.type.IsNullableType() && pOriginalOperator.type.StripNubs().IsEnumType())
             {
                 Debug.Assert(pOperator.kind == ExpressionKind.EK_BITNOT); // The only built-in unary operator defined on nullable enum.
-                CType underlyingType = pOriginalOperator.type.StripNubs().underlyingEnumType();
+                CType underlyingType = pOriginalOperator.type.StripNubs().UnderlyingEnumType();
                 CType nullableType = GetSymbolLoader().GetTypeManager().GetNullable(underlyingType);
                 op = GenerateCall(PREDEFMETH.PM_EXPRESSION_CONVERT, op, CreateTypeOf(nullableType));
             }
             EXPR call = GenerateCall(pdm, op);
-            if (pOriginalOperator.type.IsNullableType() && pOriginalOperator.type.StripNubs().isEnumType())
+            if (pOriginalOperator.type.IsNullableType() && pOriginalOperator.type.StripNubs().IsEnumType())
             {
                 call = GenerateCall(PREDEFMETH.PM_EXPRESSION_CONVERT, call, CreateTypeOf(pOperator.type));
             }
@@ -836,7 +836,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // represented in the EXPR tree so that this is more transparent.
 
                 // converting an enum to its underlying CType never fails, so no need to check it.
-                CType underlyingType = arg.type.StripNubs().underlyingEnumType();
+                CType underlyingType = arg.type.StripNubs().UnderlyingEnumType();
                 CType nullableType = GetSymbolLoader().GetTypeManager().GetNullable(underlyingType);
                 EXPR typeofNubEnum = CreateTypeOf(nullableType);
                 target = GenerateCall(PREDEFMETH.PM_EXPRESSION_CONVERT, target, typeofNubEnum);
@@ -995,7 +995,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             EXPR constructorInfo = GetExprFactory().CreateMethodInfo(expr.mwi);
             EXPR args = GenerateArgsList(expr.GetOptionalArguments());
             EXPR Params = GenerateParamsArray(args, PredefinedType.PT_EXPRESSION);
-            if (expr.type.IsAggregateType() && expr.type.AsAggregateType().getAggregate().IsAnonymousType())
+            if (expr.type.IsAggregateType() && expr.type.AsAggregateType().GetAggregate().IsAnonymousType())
             {
                 EXPR members = GenerateMembersArray(expr.type.AsAggregateType(), PredefinedType.PT_METHODINFO);
                 return GenerateCall(PREDEFMETH.PM_EXPRESSION_NEW_MEMBERS, constructorInfo, Params, members);
@@ -1027,7 +1027,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             Debug.Assert(expr != null);
             Debug.Assert(expr.mwi.Meth().IsConstructor());
-            Debug.Assert(expr.type.isDelegateType());
+            Debug.Assert(expr.type.IsDelegateType());
             Debug.Assert(expr.GetOptionalArguments() != null);
             Debug.Assert(expr.GetOptionalArguments().isLIST());
             EXPRLIST origArgs = expr.GetOptionalArguments().asLIST();
@@ -1181,7 +1181,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             EXPR newArgs = null;
             EXPR newArgsTail = newArgs;
             int methodCount = 0;
-            AggregateSymbol aggSym = anonymousType.getAggregate();
+            AggregateSymbol aggSym = anonymousType.GetAggregate();
 
             for (Symbol member = aggSym.firstChild; member != null; member = member.nextChild)
             {
@@ -1228,8 +1228,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Is the operator even a candidate for lifting?
             if (fptype1.IsNullableType() || fptype2.IsNullableType() ||
                 !fptype1.IsAggregateType() || !fptype2.IsAggregateType() ||
-                !fptype1.AsAggregateType().getAggregate().IsValueType() ||
-                !fptype2.AsAggregateType().getAggregate().IsValueType())
+                !fptype1.AsAggregateType().GetAggregate().IsValueType() ||
+                !fptype2.AsAggregateType().GetAggregate().IsValueType())
             {
                 return;
             }
@@ -1255,7 +1255,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (pType.IsNullableType())
             {
                 CType pStrippedType = pType.StripNubs();
-                return pStrippedType.IsAggregateType() && pStrippedType.AsAggregateType().getAggregate().IsValueType();
+                return pStrippedType.IsAggregateType() && pStrippedType.AsAggregateType().GetAggregate().IsValueType();
             }
             return false;
         }
@@ -1276,7 +1276,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             EXPRCALL pCall = pExpr.asCALL();
             return pCall.mwi.Meth() != null &&
                 pCall.mwi.Meth().IsConstructor() &&
-                pCall.type.isDelegateType() &&
+                pCall.type.IsDelegateType() &&
                 pCall.GetOptionalArguments() != null &&
                 pCall.GetOptionalArguments().isLIST() &&
                 pCall.GetOptionalArguments().asLIST().GetOptionalNextListNode().kind == ExpressionKind.EK_FUNCPTR;
@@ -1285,7 +1285,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             CType strippedArgType = argtype.IsNullableType() ? argtype.StripNubs() : argtype;
             CType strippedDestType = desttype.IsNullableType() ? desttype.StripNubs() : desttype;
-            return strippedArgType.isEnumType() && strippedDestType.isPredefType(PredefinedType.PT_DECIMAL);
+            return strippedArgType.IsEnumType() && strippedDestType.IsPredefType(PredefinedType.PT_DECIMAL);
         }
     }
 }

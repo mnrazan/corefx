@@ -21,9 +21,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             type.outerType = outerType;
             type.SetOwningAggregate(parent);
             type.SetTypeArgsThis(typeArgsThis);
-            type.SetName(name);
+            type.Name = name;
 
-            type.SetTypeKind(TypeKind.TK_AggregateType);
+            type.TypeKind = TypeKind.TK_AggregateType;
             return type;
         }
 
@@ -33,7 +33,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             TypeParameterType type = new TypeParameterType();
             type.SetTypeParameterSymbol(pSymbol);
             type.SetUnresolved(pSymbol.parent != null && pSymbol.parent.IsAggregateSymbol() && pSymbol.parent.AsAggregateSymbol().IsUnresolved());
-            type.SetName(pSymbol.name);
+            type.Name = pSymbol.name;
 
 #if CSEE
             type.typeRes = type;
@@ -46,7 +46,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(pSymbol.GetTypeParameterType() == null);
             pSymbol.SetTypeParameterType(type);
 
-            type.SetTypeKind(TypeKind.TK_TypeParameterType);
+            type.TypeKind = TypeKind.TK_TypeParameterType;
             return type;
         }
 
@@ -54,42 +54,42 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         public VoidType CreateVoid()
         {
             VoidType type = new VoidType();
-            type.SetTypeKind(TypeKind.TK_VoidType);
+            type.TypeKind = TypeKind.TK_VoidType;
             return type;
         }
 
         public NullType CreateNull()
         {
             NullType type = new NullType();
-            type.SetTypeKind(TypeKind.TK_NullType);
+            type.TypeKind = TypeKind.TK_NullType;
             return type;
         }
 
         public OpenTypePlaceholderType CreateUnit()
         {
             OpenTypePlaceholderType type = new OpenTypePlaceholderType();
-            type.SetTypeKind(TypeKind.TK_OpenTypePlaceholderType);
+            type.TypeKind = TypeKind.TK_OpenTypePlaceholderType;
             return type;
         }
 
         public BoundLambdaType CreateAnonMethod()
         {
             BoundLambdaType type = new BoundLambdaType();
-            type.SetTypeKind(TypeKind.TK_BoundLambdaType);
+            type.TypeKind = TypeKind.TK_BoundLambdaType;
             return type;
         }
 
         public MethodGroupType CreateMethodGroup()
         {
             MethodGroupType type = new MethodGroupType();
-            type.SetTypeKind(TypeKind.TK_MethodGroupType);
+            type.TypeKind = TypeKind.TK_MethodGroupType;
             return type;
         }
 
         public ArgumentListType CreateArgList()
         {
             ArgumentListType type = new ArgumentListType();
-            type.SetTypeKind(TypeKind.TK_ArgumentListType);
+            type.TypeKind = TypeKind.TK_ArgumentListType;
             return type;
         }
 
@@ -101,13 +101,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             TypeArray typeArgs)
         {
             ErrorType e = new ErrorType();
-            e.SetName(name);
+            e.Name = name;
             e.nameText = nameText;
             e.typeArgs = typeArgs;
             e.SetTypeParent(parent);
             e.SetNSParent(pParentNS);
 
-            e.SetTypeKind(TypeKind.TK_ErrorType);
+            e.TypeKind = TypeKind.TK_ErrorType;
             return e;
         }
 
@@ -116,43 +116,43 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             ArrayType type = new ArrayType();
 
-            type.SetName(name);
+            type.Name = name;
             type.rank = rank;
             type.SetElementType(pElementType);
 
-            type.SetTypeKind(TypeKind.TK_ArrayType);
+            type.TypeKind = TypeKind.TK_ArrayType;
             return type;
         }
 
         public PointerType CreatePointer(Name name, CType pReferentType)
         {
             PointerType type = new PointerType();
-            type.SetName(name);
+            type.Name = name;
             type.SetReferentType(pReferentType);
 
-            type.SetTypeKind(TypeKind.TK_PointerType);
+            type.TypeKind = TypeKind.TK_PointerType;
             return type;
         }
 
         public ParameterModifierType CreateParameterModifier(Name name, CType pParameterType)
         {
             ParameterModifierType type = new ParameterModifierType();
-            type.SetName(name);
+            type.Name = name;
             type.SetParameterType(pParameterType);
 
-            type.SetTypeKind(TypeKind.TK_ParameterModifierType);
+            type.TypeKind = TypeKind.TK_ParameterModifierType;
             return type;
         }
 
         public NullableType CreateNullable(Name name, CType pUnderlyingType, BSYMMGR symmgr, TypeManager typeManager)
         {
             NullableType type = new NullableType();
-            type.SetName(name);
+            type.Name = name;
             type.SetUnderlyingType(pUnderlyingType);
             type.symmgr = symmgr;
             type.typeManager = typeManager;
 
-            type.SetTypeKind(TypeKind.TK_NullableType);
+            type.TypeKind = TypeKind.TK_NullableType;
             return type;
         }
     }

@@ -320,14 +320,14 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         // When we find a method, we check if the type has interfaces. If so, mark the other interfaces
                         // as hidden, and object as well.
 
-                        if (_pCurrentType.isInterfaceType())
+                        if (_pCurrentType.IsInterfaceType())
                         {
                             TypeArray ifaces = _pCurrentType.GetIfacesAll();
                             for (int i = 0; i < ifaces.Count; i++)
                             {
                                 AggregateType type = ifaces[i].AsAggregateType();
 
-                                Debug.Assert(type.isInterfaceType());
+                                Debug.Assert(type.IsInterfaceType());
                                 _HiddenTypes.Add(type);
                             }
 
@@ -583,8 +583,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     CType pConstValType = methprop.GetDefaultParameterValueConstValType(index);
                     CONSTVAL cv = methprop.GetDefaultParameterValue(index);
 
-                    if (pConstValType.isPredefType(PredefinedType.PT_DATETIME) &&
-                        (pRawParamType.isPredefType(PredefinedType.PT_DATETIME) || pRawParamType.isPredefType(PredefinedType.PT_OBJECT) || pRawParamType.isPredefType(PredefinedType.PT_VALUE)))
+                    if (pConstValType.IsPredefType(PredefinedType.PT_DATETIME) &&
+                        (pRawParamType.IsPredefType(PredefinedType.PT_DATETIME) || pRawParamType.IsPredefType(PredefinedType.PT_OBJECT) || pRawParamType.IsPredefType(PredefinedType.PT_VALUE)))
                     {
                         // This is the specific case where we want to create a DateTime
                         // but the constval that stores it is a long.
@@ -592,7 +592,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         AggregateType dateTimeType = symbolLoader.GetReqPredefType(PredefinedType.PT_DATETIME);
                         optionalArgument = exprFactory.CreateConstant(dateTimeType, new CONSTVAL(DateTime.FromBinary(cv.longVal)));
                     }
-                    else if (pConstValType.isSimpleOrEnumOrString())
+                    else if (pConstValType.IsSimpleOrEnumOrString())
                     {
                         // In this case, the constval is a simple type (all the numerics, including
                         // decimal), or an enum or a string. This covers all the substantial values,
@@ -601,7 +601,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         // For enum parameters, we create a constant of the enum type. For everything
                         // else, we create the appropriate constant.
 
-                        if (pRawParamType.isEnumType() && pConstValType == pRawParamType.underlyingType())
+                        if (pRawParamType.IsEnumType() && pConstValType == pRawParamType.UnderlyingType())
                         {
                             optionalArgument = exprFactory.CreateConstant(pRawParamType, cv);
                         }
@@ -630,7 +630,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     // There was no default parameter specified, so generally use default(T),
                     // except for some cases when the parameter type in metatdata is object.
 
-                    if (pParamType.isPredefType(PredefinedType.PT_OBJECT))
+                    if (pParamType.IsPredefType(PredefinedType.PT_OBJECT))
                     {
                         if (methprop.MarshalAsObject(index))
                         {
@@ -917,7 +917,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 if (_pCurrentType != type &&
                         _pCurrentType != null &&
                         !_methList.IsEmpty() &&
-                        !_methList.Head().mpwi.GetType().isInterfaceType() &&
+                        !_methList.Head().mpwi.GetType().IsInterfaceType() &&
                         (!_methList.Head().mpwi.Sym.IsMethodSymbol() || !_methList.Head().mpwi.Meth().IsExtension()))
                 {
                     return false;
@@ -925,7 +925,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 else if (_pCurrentType != type &&
                         _pCurrentType != null &&
                         !_methList.IsEmpty() &&
-                        !_methList.Head().mpwi.GetType().isInterfaceType() &&
+                        !_methList.Head().mpwi.GetType().IsInterfaceType() &&
                         _methList.Head().mpwi.Sym.IsMethodSymbol() &&
                         _methList.Head().mpwi.Meth().IsExtension())
                 {
@@ -1328,13 +1328,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // Check for an invoke.
                 if (_pGroup.GetOptionalObject() != null &&
                         _pGroup.GetOptionalObject().type != null &&
-                        _pGroup.GetOptionalObject().type.isDelegateType() &&
+                        _pGroup.GetOptionalObject().type.IsDelegateType() &&
                         _pGroup.name == GetSymbolLoader().GetNameManager().GetPredefName(PredefinedName.PN_INVOKE))
                 {
                     Debug.Assert(!_results.GetBestResult() || _results.GetBestResult().MethProp().getClass().IsDelegate());
-                    Debug.Assert(!_results.GetBestResult() || _results.GetBestResult().GetType().getAggregate().IsDelegate());
+                    Debug.Assert(!_results.GetBestResult() || _results.GetBestResult().GetType().GetAggregate().IsDelegate());
                     bUseDelegateErrors = true;
-                    nameErr = _pGroup.GetOptionalObject().type.getAggregate().name;
+                    nameErr = _pGroup.GetOptionalObject().type.GetAggregate().name;
                 }
 
                 if (_results.GetBestResult())

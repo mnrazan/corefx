@@ -238,7 +238,7 @@ namespace Microsoft.CSharp.RuntimeBinder
                     CType cType = GetCTypeFromType(type);
                     if (!(cType is AggregateType))
                         continue;
-                    AggregateSymbol aggregate = (cType as AggregateType).getAggregate();
+                    AggregateSymbol aggregate = (cType as AggregateType).GetAggregate();
                     FieldSymbol addedField = null;
 
                     // We need to add fields before the actual events, so do the first iteration 
@@ -323,7 +323,7 @@ namespace Microsoft.CSharp.RuntimeBinder
                 for (int i = 0; i < collectioniFaces.Count; i++)
                 {
                     CType collectionType = collectioniFaces[i];
-                    Debug.Assert(collectionType.isInterfaceType());
+                    Debug.Assert(collectionType.IsInterfaceType());
 
                     // Insert into our list of Types.
                     list.Insert(0, collectionType.AssociatedSystemType);
@@ -1980,7 +1980,7 @@ namespace Microsoft.CSharp.RuntimeBinder
                 // the methods in order. As such, our parent methods should be in the 
                 // symbol table at this point.
 
-                AggregateSymbol aggregate = GetCTypeFromType(baseMethodInfo.DeclaringType).getAggregate();
+                AggregateSymbol aggregate = GetCTypeFromType(baseMethodInfo.DeclaringType).GetAggregate();
                 MethodSymbol baseMethod = FindMethodFromMemberInfo(baseMethodInfo);
 
                 // This assert is temporarily disabled to improve testability of the area on .NetNative
@@ -2001,7 +2001,7 @@ namespace Microsoft.CSharp.RuntimeBinder
         {
             CType t = GetCTypeFromType(baseMemberInfo.DeclaringType);
             Debug.Assert(t.IsAggregateType());
-            AggregateSymbol aggregate = t.getAggregate();
+            AggregateSymbol aggregate = t.GetAggregate();
             Debug.Assert(aggregate != null);
 
             MethodSymbol meth = _semanticChecker.SymbolLoader.LookupAggMember(
@@ -2074,7 +2074,7 @@ namespace Microsoft.CSharp.RuntimeBinder
             }
 
             Debug.Assert(t is AggregateType);
-            AggregateSymbol aggregate = t.AsAggregateType().getAggregate();
+            AggregateSymbol aggregate = t.AsAggregateType().GetAggregate();
 
             // Now find all the conversions and make them.
             IEnumerable<MethodInfo> conversions = Enumerable.Where(type.GetRuntimeMethods(),

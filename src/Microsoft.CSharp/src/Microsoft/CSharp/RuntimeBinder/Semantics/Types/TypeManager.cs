@@ -78,7 +78,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType ctype = (CType)type;
 
         LRecurse:  // Label used for "tail" recursion.
-            switch (ctype.GetTypeKind())
+            switch (ctype.TypeKind)
             {
                 default:
                     Debug.Assert(false, "Bad Symbol kind in TypeContainsAnonymousTypes");
@@ -99,7 +99,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     goto LRecurse;
 
                 case TypeKind.TK_AggregateType:
-                    if (ctype.AsAggregateType().getAggregate().IsAnonymousType())
+                    if (ctype.AsAggregateType().GetAggregate().IsAnonymousType())
                     {
                         return true;
                     }
@@ -212,7 +212,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         public AggregateType GetAggregate(AggregateSymbol agg, AggregateType atsOuter, TypeArray typeArgs)
         {
             Debug.Assert(agg.GetTypeManager() == this);
-            Debug.Assert(atsOuter == null || atsOuter.getAggregate() == agg.Parent, "");
+            Debug.Assert(atsOuter == null || atsOuter.GetAggregate() == agg.Parent, "");
 
             if (typeArgs == null)
             {
@@ -284,7 +284,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 Debug.Assert(!pAggregate.HasErrors());
             }
 
-            Debug.Assert(pAggregate.getAggregate() == agg);
+            Debug.Assert(pAggregate.GetAggregate() == agg);
             Debug.Assert(pAggregate.GetTypeArgsThis() != null && pAggregate.GetTypeArgsAll() != null);
             Debug.Assert(pAggregate.GetTypeArgsThis() == typeArgs);
 
@@ -355,7 +355,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         public NullableType GetNubFromNullable(AggregateType ats)
         {
-            Debug.Assert(ats.isPredefType(PredefinedType.PT_G_OPTIONAL));
+            Debug.Assert(ats.IsPredefType(PredefinedType.PT_G_OPTIONAL));
             return GetNullable(ats.GetTypeArgsAll()[0]);
         }
 
@@ -546,7 +546,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType typeSrc;
             CType typeDst;
 
-            switch (type.GetTypeKind())
+            switch (type.TypeKind)
             {
                 default:
                     Debug.Assert(false);
@@ -585,7 +585,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                         TypeArray typeArgs = SubstTypeArray(ats.GetTypeArgsAll(), pctx);
                         if (ats.GetTypeArgsAll() != typeArgs)
-                            return GetAggregate(ats.getAggregate(), typeArgs);
+                            return GetAggregate(ats.GetAggregate(), typeArgs);
                     }
                     return type;
 
@@ -690,7 +690,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return true;
             }
 
-            switch (typeSrc.GetTypeKind())
+            switch (typeSrc.TypeKind)
             {
                 default:
                     Debug.Assert(false, "Bad Symbol kind in SubstEqualTypesCore");
@@ -700,16 +700,16 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 case TypeKind.TK_VoidType:
                 case TypeKind.TK_OpenTypePlaceholderType:
                     // There should only be a single instance of these.
-                    Debug.Assert(typeDst.GetTypeKind() != typeSrc.GetTypeKind());
+                    Debug.Assert(typeDst.TypeKind != typeSrc.TypeKind);
                     return false;
 
                 case TypeKind.TK_ArrayType:
-                    if (typeDst.GetTypeKind() != TypeKind.TK_ArrayType || typeDst.AsArrayType().rank != typeSrc.AsArrayType().rank)
+                    if (typeDst.TypeKind != TypeKind.TK_ArrayType || typeDst.AsArrayType().rank != typeSrc.AsArrayType().rank)
                         return false;
                     goto LCheckBases;
 
                 case TypeKind.TK_ParameterModifierType:
-                    if (typeDst.GetTypeKind() != TypeKind.TK_ParameterModifierType ||
+                    if (typeDst.TypeKind != TypeKind.TK_ParameterModifierType ||
                         ((pctx.grfst & SubstTypeFlags.NoRefOutDifference) == 0 &&
                          typeDst.AsParameterModifierType().isOut != typeSrc.AsParameterModifierType().isOut))
                         return false;
@@ -717,7 +717,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                 case TypeKind.TK_PointerType:
                 case TypeKind.TK_NullableType:
-                    if (typeDst.GetTypeKind() != typeSrc.GetTypeKind())
+                    if (typeDst.TypeKind != typeSrc.TypeKind)
                         return false;
                     LCheckBases:
                     typeSrc = typeSrc.GetBaseOrParameterOrElementType();
@@ -725,13 +725,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     goto LRecurse;
 
                 case TypeKind.TK_AggregateType:
-                    if (typeDst.GetTypeKind() != TypeKind.TK_AggregateType)
+                    if (typeDst.TypeKind != TypeKind.TK_AggregateType)
                         return false;
                     { // BLOCK
                         AggregateType atsSrc = typeSrc.AsAggregateType();
                         AggregateType atsDst = typeDst.AsAggregateType();
 
-                        if (atsSrc.getAggregate() != atsDst.getAggregate())
+                        if (atsSrc.GetAggregate() != atsDst.GetAggregate())
                             return false;
 
                         Debug.Assert(atsSrc.GetTypeArgsAll().Count == atsDst.GetTypeArgsAll().Count);
@@ -844,7 +844,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (type == typeFind || type.Equals(typeFind))
                 return true;
 
-            switch (type.GetTypeKind())
+            switch (type.TypeKind)
             {
                 default:
                     Debug.Assert(false, "Bad Symbol kind in TypeContainsType");
@@ -854,7 +854,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 case TypeKind.TK_VoidType:
                 case TypeKind.TK_OpenTypePlaceholderType:
                     // There should only be a single instance of these.
-                    Debug.Assert(typeFind.GetTypeKind() != type.GetTypeKind());
+                    Debug.Assert(typeFind.TypeKind != type.TypeKind);
                     return false;
 
                 case TypeKind.TK_ArrayType:
@@ -903,7 +903,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         public static bool TypeContainsTyVars(CType type, TypeArray typeVars)
         {
         LRecurse:  // Label used for "tail" recursion.
-            switch (type.GetTypeKind())
+            switch (type.TypeKind)
             {
                 default:
                     Debug.Assert(false, "Bad Symbol kind in TypeContainsTyVars");
@@ -1132,7 +1132,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             CType intermediateType;
-            if ((typeSrc.isInterfaceType() || typeSrc.isDelegateType()) && TryVarianceAdjustmentToGetAccessibleType(semanticChecker, bindingContext, typeSrc.AsAggregateType(), out intermediateType))
+            if ((typeSrc.IsInterfaceType() || typeSrc.IsDelegateType()) && TryVarianceAdjustmentToGetAccessibleType(semanticChecker, bindingContext, typeSrc.AsAggregateType(), out intermediateType))
             {
                 // If we have an interface or delegate type, then it can potentially be varied by its type arguments
                 // to produce an accessible type, and if that's the case, then return that.
@@ -1198,7 +1198,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private bool TryVarianceAdjustmentToGetAccessibleType(CSemanticChecker semanticChecker, BindingContext bindingContext, AggregateType typeSrc, out CType typeDst)
         {
             Debug.Assert(typeSrc != null);
-            Debug.Assert(typeSrc.isInterfaceType() || typeSrc.isDelegateType());
+            Debug.Assert(typeSrc.IsInterfaceType() || typeSrc.IsDelegateType());
 
             typeDst = null;
 

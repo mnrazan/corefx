@@ -162,7 +162,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         public bool isManagedType(CType type)
         {
-            return type.computeManagedType(this);
+            return type.ComputeManagedType(this);
         }
 
         // It would be nice to make this a virtual method on typeSym.
@@ -174,7 +174,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                    typeSym.IsArrayType() ||
                    typeSym.IsNullableType());
 
-            switch (typeSym.GetTypeKind())
+            switch (typeSym.TypeKind)
             {
                 case TypeKind.TK_AggregateType:
                     return typeSym.AsAggregateType();
@@ -193,7 +193,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             Debug.Assert(pDerived != null);
             Debug.Assert(pBase != null);
-            if (!pBase.isInterfaceType())
+            if (!pBase.IsInterfaceType())
             {
                 return false;
             }
@@ -224,7 +224,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             // This checks to see whether derived is a class, and if so, 
             // if base is a base class of derived.
-            if (!pDerived.isClassType())
+            if (!pDerived.IsClassType())
             {
                 return false;
             }
@@ -237,7 +237,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(pBase != null);
             // A base class has got to be a class. The derived type might be a struct.
 
-            if (!pBase.isClassType())
+            if (!pBase.IsClassType())
             {
                 return false;
             }
@@ -305,7 +305,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 return false;
             }
-            if (!pDest.isInterfaceType())
+            if (!pDest.IsInterfaceType())
             {
                 return false;
             }
@@ -321,13 +321,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // * The base interface of IReadOnlyList<T> is IReadOnlyCollection<T>.
             // * The base interface of IReadOnlyCollection<T> is IEnumerable<T>.
 
-            if (pDest.isPredefType(PredefinedType.PT_IENUMERABLE))
+            if (pDest.IsPredefType(PredefinedType.PT_IENUMERABLE))
             {
                 return true;
             }
 
             AggregateType atsDest = pDest.AsAggregateType();
-            AggregateSymbol aggDest = pDest.getAggregate();
+            AggregateSymbol aggDest = pDest.GetAggregate();
             if (!aggDest.isPredefAgg(PredefinedType.PT_G_ILIST) &&
                 !aggDest.isPredefAgg(PredefinedType.PT_G_ICOLLECTION) &&
                 !aggDest.isPredefAgg(PredefinedType.PT_G_IENUMERABLE) &&
@@ -351,12 +351,12 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             // The implicit reference conversions are:
             // * From any reference type to Object.
-            if (pSource.IsRefType() && pDest.isPredefType(PredefinedType.PT_OBJECT))
+            if (pSource.IsRefType() && pDest.IsPredefType(PredefinedType.PT_OBJECT))
             {
                 return true;
             }
             // * From any class type S to any class type T provided S is derived from T.
-            if (pSource.isClassType() && pDest.isClassType() && IsBaseClass(pSource, pDest))
+            if (pSource.IsClassType() && pDest.IsClassType() && IsBaseClass(pSource, pDest))
             {
                 return true;
             }
@@ -381,15 +381,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // * From any interface type S to any interface type T provided S is not T and S is 
             //   an interface convertible to T.
 
-            if (pSource.isClassType() && pDest.isInterfaceType() && HasAnyBaseInterfaceConversion(pSource, pDest))
+            if (pSource.IsClassType() && pDest.IsInterfaceType() && HasAnyBaseInterfaceConversion(pSource, pDest))
             {
                 return true;
             }
-            if (pSource.isInterfaceType() && pDest.isInterfaceType() && HasAnyBaseInterfaceConversion(pSource, pDest))
+            if (pSource.IsInterfaceType() && pDest.IsInterfaceType() && HasAnyBaseInterfaceConversion(pSource, pDest))
             {
                 return true;
             }
-            if (pSource.isInterfaceType() && pDest.isInterfaceType() && pSource != pDest &&
+            if (pSource.IsInterfaceType() && pDest.IsInterfaceType() && pSource != pDest &&
                 HasInterfaceConversion(pSource.AsAggregateType(), pDest.AsAggregateType()))
             {
                 return true;
@@ -406,7 +406,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return true;
             }
             // * From any array type to System.Array or any interface implemented by System.Array.
-            if (pSource.IsArrayType() && (pDest.isPredefType(PredefinedType.PT_ARRAY) ||
+            if (pSource.IsArrayType() && (pDest.IsPredefType(PredefinedType.PT_ARRAY) ||
                 IsBaseInterface(GetReqPredefType(PredefinedType.PT_ARRAY, false), pDest)))
             {
                 return true;
@@ -428,9 +428,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // * From any delegate type to System.Delegate 
             // * From any delegate type to System.MulticastDelegate
             // * From any delegate type to any interface implemented by System.MulticastDelegate
-            if (pSource.isDelegateType() &&
-                (pDest.isPredefType(PredefinedType.PT_MULTIDEL) ||
-                pDest.isPredefType(PredefinedType.PT_DELEGATE) ||
+            if (pSource.IsDelegateType() &&
+                (pDest.IsPredefType(PredefinedType.PT_MULTIDEL) ||
+                pDest.IsPredefType(PredefinedType.PT_DELEGATE) ||
                 IsBaseInterface(GetReqPredefType(PredefinedType.PT_MULTIDEL, false), pDest)))
             {
                 return true;
@@ -440,7 +440,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // * From any delegate type S to a delegate type T provided S is not T and
             //   S is a delegate convertible to T
 
-            if (pSource.isDelegateType() && pDest.isDelegateType() &&
+            if (pSource.IsDelegateType() && pDest.IsDelegateType() &&
                 HasDelegateConversion(pSource.AsAggregateType(), pDest.AsAggregateType()))
             {
                 return true;
@@ -522,7 +522,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool HasAnyBaseInterfaceConversion(CType pDerived, CType pBase)
         {
-            if (!pBase.isInterfaceType())
+            if (!pBase.IsInterfaceType())
             {
                 return false;
             }
@@ -561,8 +561,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool HasInterfaceConversion(AggregateType pSource, AggregateType pDest)
         {
-            Debug.Assert(pSource != null && pSource.isInterfaceType());
-            Debug.Assert(pDest != null && pDest.isInterfaceType());
+            Debug.Assert(pSource != null && pSource.IsInterfaceType());
+            Debug.Assert(pDest != null && pDest.IsInterfaceType());
             return HasVariantConversion(pSource, pDest);
         }
 
@@ -570,8 +570,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool HasDelegateConversion(AggregateType pSource, AggregateType pDest)
         {
-            Debug.Assert(pSource != null && pSource.isDelegateType());
-            Debug.Assert(pDest != null && pDest.isDelegateType());
+            Debug.Assert(pSource != null && pSource.IsDelegateType());
+            Debug.Assert(pDest != null && pDest.IsDelegateType());
             return HasVariantConversion(pSource, pDest);
         }
 
@@ -585,8 +585,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 return true;
             }
-            AggregateSymbol pAggSym = pSource.getAggregate();
-            if (pAggSym != pDest.getAggregate())
+            AggregateSymbol pAggSym = pSource.GetAggregate();
+            if (pAggSym != pDest.GetAggregate())
             {
                 return false;
             }
@@ -768,7 +768,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             //
             // This notion is not found in the spec but it is useful in the implementation.
 
-            if (pSource.IsAggregateType() && pDest.isPredefType(PredefinedType.PT_OBJECT))
+            if (pSource.IsAggregateType() && pDest.IsPredefType(PredefinedType.PT_OBJECT))
             {
                 // If we are going from any aggregate type (class, struct, interface, enum or delegate)
                 // to object, we immediately return true. This may seem like a mere optimization --
@@ -827,7 +827,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     for (int i = 0; i < derived.GetIfacesAll().Count; i++)
                     {
                         AggregateType iface = derived.GetIfacesAll()[i].AsAggregateType();
-                        if (iface.getAggregate() == @base)
+                        if (iface.GetAggregate() == @base)
                             return true;
                     }
                     derived = derived.GetBaseAgg();
@@ -840,7 +840,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             while (derived.GetBaseClass() != null)
             {
-                derived = derived.GetBaseClass().getAggregate();
+                derived = derived.GetBaseClass().GetAggregate();
                 if (derived == @base)
                     return true;
             }

@@ -268,11 +268,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 return BetterType.Same;
             }
-            if (typeGiven.isPredefType(pt1))
+            if (typeGiven.IsPredefType(pt1))
             {
                 return BetterType.Left;
             }
-            if (typeGiven.isPredefType(pt2))
+            if (typeGiven.IsPredefType(pt2))
             {
                 return BetterType.Right;
             }
@@ -321,8 +321,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             if (!type1.IsNullableType() || !type2.IsNullableType() ||
-                !type1.AsNullableType().UnderlyingType.isPredefined() ||
-                !type2.AsNullableType().UnderlyingType.isPredefined())
+                !type1.AsNullableType().UnderlyingType.IsPredefined() ||
+                !type2.AsNullableType().UnderlyingType.IsPredefined())
             {
                 return BetterType.Neither;
             }
@@ -388,14 +388,14 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                 // For certain situations, try to give a better error.
 
-                FUNDTYPE ftSrc = expr.type.fundType();
-                FUNDTYPE ftDest = dest.fundType();
+                FundType ftSrc = expr.type.FundType();
+                FundType ftDest = dest.FundType();
 
                 if (expr.isCONSTANT_OK() &&
-                    expr.type.isSimpleType() && dest.isSimpleType())
+                    expr.type.IsSimpleType() && dest.IsSimpleType())
                 {
-                    if ((ftSrc == FUNDTYPE.FT_I4 && (ftDest <= FUNDTYPE.FT_LASTNONLONG || ftDest == FUNDTYPE.FT_U8)) ||
-                        (ftSrc == FUNDTYPE.FT_I8 && ftDest == FUNDTYPE.FT_U8))
+                    if ((ftSrc == FundType.FT_I4 && (ftDest <= FundType.FT_LastNonLong || ftDest == FundType.FT_U8)) ||
+                        (ftSrc == FundType.FT_I8 && ftDest == FundType.FT_U8))
                     {
                         // Failed because value was out of range. Report nifty error message.
                         string value = expr.asCONSTANT().I64Value.ToString(CultureInfo.InvariantCulture);
@@ -404,19 +404,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         exprResult.SetError();
                         return exprResult;
                     }
-                    else if (ftSrc == FUNDTYPE.FT_R8 && (0 != (expr.flags & EXPRFLAG.EXF_LITERALCONST)) &&
-                             (dest.isPredefType(PredefinedType.PT_FLOAT) || dest.isPredefType(PredefinedType.PT_DECIMAL)))
+                    else if (ftSrc == FundType.FT_R8 && (0 != (expr.flags & EXPRFLAG.EXF_LITERALCONST)) &&
+                             (dest.IsPredefType(PredefinedType.PT_FLOAT) || dest.IsPredefType(PredefinedType.PT_DECIMAL)))
                     {
                         // Tried to assign a literal of type double (the default) to a float or decimal. Suggest use
                         // of a 'F' or 'M' suffix.
-                        ErrorContext.Error(ErrorCode.ERR_LiteralDoubleCast, dest.isPredefType(PredefinedType.PT_DECIMAL) ? "M" : "F", dest);
+                        ErrorContext.Error(ErrorCode.ERR_LiteralDoubleCast, dest.IsPredefType(PredefinedType.PT_DECIMAL) ? "M" : "F", dest);
                         exprResult = ExprFactory.CreateCast(0, destExpr, expr);
                         exprResult.SetError();
                         return exprResult;
                     }
                 }
 
-                if (expr.type is NullType && dest.fundType() != FUNDTYPE.FT_REF)
+                if (expr.type is NullType && dest.FundType() != FundType.FT_Reference)
                 {
                     ErrorContext.Error(dest is TypeParameterType ? ErrorCode.ERR_TypeVarCantBeNull : ErrorCode.ERR_ValueCantBeNull, dest);
                 }
@@ -508,11 +508,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     // For certain situations, try to give a better error.
                     string value = "";
                     EXPR exprConst = expr.GetConst();
-                    FUNDTYPE expr_type = expr.type.fundType();
-                    bool simpleConstToSimpleDestination = exprConst != null && expr.type.isSimpleOrEnum() &&
-                        dest.isSimpleOrEnum();
+                    FundType expr_type = expr.type.FundType();
+                    bool simpleConstToSimpleDestination = exprConst != null && expr.type.IsSimpleOrEnum() &&
+                        dest.IsSimpleOrEnum();
 
-                    if (simpleConstToSimpleDestination && expr_type == FUNDTYPE.FT_STRUCT)
+                    if (simpleConstToSimpleDestination && expr_type == FundType.FT_Struct)
                     {
                         // We have a constant decimal that is out of range of the destination type.
                         // In both checked and unchecked contexts we issue an error. No need to recheck conversion in unchecked context.
@@ -531,27 +531,27 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         }
 
                         // Failed because value was out of range. Report nifty error message.
-                        if (expr_type <= FUNDTYPE.FT_LASTINTEGRAL)
+                        if (expr_type <= FundType.FT_LastIntergral)
                         {
-                            if (expr.type.isUnsigned())
+                            if (expr.type.IsUnsigned())
                                 value = ((ulong)(exprConst.asCONSTANT()).I64Value).ToString(CultureInfo.InvariantCulture);
                             else
                                 value = ((long)(exprConst.asCONSTANT()).I64Value).ToString(CultureInfo.InvariantCulture);
                         }
-                        else if (expr_type <= FUNDTYPE.FT_LASTNUMERIC)
+                        else if (expr_type <= FundType.FT_LastNumeric)
                         {
                             value = (exprConst.asCONSTANT()).Val.doubleVal.ToString(CultureInfo.InvariantCulture);
                         }
                         else
                         {
                             // We should have taken care of constant decimal conversion errors
-                            Debug.Assert(expr_type == FUNDTYPE.FT_STRUCT);
+                            Debug.Assert(expr_type == FundType.FT_Struct);
                             Debug.Assert(false, "Error in constant conversion logic!");
                         }
                         ErrorContext.Error(ErrorCode.ERR_ConstOutOfRangeChecked, value, dest);
                     }
 
-                    else if (expr.type is NullType && dest.fundType() != FUNDTYPE.FT_REF)
+                    else if (expr.type is NullType && dest.FundType() != FundType.FT_Reference)
                     {
                         ErrorContext.Error(ErrorCode.ERR_ValueCantBeNull, dest);
                     }
@@ -662,18 +662,18 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             pexprDst = null;
 
-            if (!typeDst.isDelegateType())
+            if (!typeDst.IsDelegateType())
             {
                 if (fReportErrors)
                     ErrorContext.Error(ErrorCode.ERR_MethGrpToNonDel, grp.name, typeDst);
                 return false;
             }
             AggregateType type = typeDst.AsAggregateType();
-            MethodSymbol methCtor = SymbolLoader.PredefinedMembers.FindDelegateConstructor(type.getAggregate(), fReportErrors);
+            MethodSymbol methCtor = SymbolLoader.PredefinedMembers.FindDelegateConstructor(type.GetAggregate(), fReportErrors);
             if (methCtor == null)
                 return false;
             // Now, find the invoke function on the delegate.
-            MethodSymbol methInvoke = SymbolLoader.LookupInvokeMeth(type.getAggregate());
+            MethodSymbol methInvoke = SymbolLoader.LookupInvokeMeth(type.GetAggregate());
             Debug.Assert(methInvoke != null && methInvoke.isInvoke());
             TypeArray @params = GetTypes().SubstTypeArray(methInvoke.Params, type);
             CType typeRet = GetTypes().SubstType(methInvoke.RetType, type);
@@ -775,7 +775,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     ErrorContext.Error(ErrorCode.ERR_DelegateOnNullable, mwiWrap);
                 }
                 funcPtr.SetOptionalObject(obj);
-                if (obj != null && obj.type.fundType() != FUNDTYPE.FT_REF)
+                if (obj != null && obj.type.FundType() != FundType.FT_Reference)
                 {
                     // Must box the object before creating a delegate to it.
                     obj = mustConvert(obj, GetReqPDT(PredefinedType.PT_OBJECT));
@@ -928,7 +928,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(exprSrc == null || exprSrc.type == typeSrc);
 
             // If either type is an interface we should never employ a UD conversion.
-            if (typeSrc == null || typeDst == null || typeSrc.isInterfaceType() || typeDst.isInterfaceType())
+            if (typeSrc == null || typeDst == null || typeSrc.IsInterfaceType() || typeDst.IsInterfaceType())
                 return false;
             CType typeSrcBase = typeSrc.StripNubs();
             CType typeDstBase = typeDst.StripNubs();
@@ -954,7 +954,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (typeSrcBase.IsTypeParameterType())
             {
                 AggregateType atsBase = typeSrcBase.AsTypeParameterType().GetEffectiveBaseClass();
-                if (atsBase != null && atsBase.getAggregate().HasConversion(GetSymbolLoader()))
+                if (atsBase != null && atsBase.GetAggregate().HasConversion(GetSymbolLoader()))
                 {
                     rgats[cats++] = atsBase;
                 }
@@ -966,10 +966,10 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // nullable of it) as its from-type.
                 fImplicitOrExactSrc = true;
             }
-            else if (typeSrcBase.IsAggregateType() && typeSrcBase.getAggregate().HasConversion(GetSymbolLoader()))
+            else if (typeSrcBase.IsAggregateType() && typeSrcBase.GetAggregate().HasConversion(GetSymbolLoader()))
             {
                 rgats[cats++] = typeSrcBase.AsAggregateType();
-                fIntPtrOverride2 = typeSrcBase.isPredefType(PredefinedType.PT_INTPTR) || typeSrcBase.isPredefType(PredefinedType.PT_UINTPTR);
+                fIntPtrOverride2 = typeSrcBase.IsPredefType(PredefinedType.PT_INTPTR) || typeSrcBase.IsPredefType(PredefinedType.PT_UINTPTR);
             }
 
             // Get the list of operators from the destination.
@@ -979,19 +979,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // an explicit conversion exists from typeSrc to typeDst. An implicit is no better
                 // than an explicit.
                 AggregateType atsBase;
-                if (!fImplicitOnly && (atsBase = typeDstBase.AsTypeParameterType().GetEffectiveBaseClass()).getAggregate().HasConversion(GetSymbolLoader()))
+                if (!fImplicitOnly && (atsBase = typeDstBase.AsTypeParameterType().GetEffectiveBaseClass()).GetAggregate().HasConversion(GetSymbolLoader()))
                 {
                     rgats[cats++] = atsBase;
                 }
             }
             else if (typeDstBase.IsAggregateType())
             {
-                if (typeDstBase.getAggregate().HasConversion(GetSymbolLoader()))
+                if (typeDstBase.GetAggregate().HasConversion(GetSymbolLoader()))
                 {
                     rgats[cats++] = typeDstBase.AsAggregateType();
                 }
 
-                if (fIntPtrOverride2 && !typeDstBase.isPredefType(PredefinedType.PT_LONG) && !typeDstBase.isPredefType(PredefinedType.PT_ULONG))
+                if (fIntPtrOverride2 && !typeDstBase.IsPredefType(PredefinedType.PT_LONG) && !typeDstBase.IsPredefType(PredefinedType.PT_ULONG))
                 {
                     fIntPtrOverride2 = false;
                 }
@@ -1019,9 +1019,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // In the first pass if we find types that are non-comparable, keep one of the types and keep going.
             for (int iats = 0; iats < cats; iats++)
             {
-                for (AggregateType atsCur = rgats[iats]; atsCur != null && atsCur.getAggregate().HasConversion(GetSymbolLoader()); atsCur = atsCur.GetBaseClass())
+                for (AggregateType atsCur = rgats[iats]; atsCur != null && atsCur.GetAggregate().HasConversion(GetSymbolLoader()); atsCur = atsCur.GetBaseClass())
                 {
-                    AggregateSymbol aggCur = atsCur.getAggregate();
+                    AggregateSymbol aggCur = atsCur.GetAggregate();
 
                     // We need to replicate behavior that allows non-standard conversions with these guys.
                     PredefinedType aggPredefType = aggCur.GetPredefType();
@@ -1063,11 +1063,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         }
 
                         {
-                            FUNDTYPE ftFrom;
-                            FUNDTYPE ftTo;
+                            FundType ftFrom;
+                            FundType ftTo;
 
-                            if ((ftTo = typeTo.fundType()) <= FUNDTYPE.FT_LASTNUMERIC && ftTo > FUNDTYPE.FT_NONE &&
-                                (ftFrom = typeFrom.fundType()) <= FUNDTYPE.FT_LASTNUMERIC && ftFrom > FUNDTYPE.FT_NONE)
+                            if ((ftTo = typeTo.FundType()) <= FundType.FT_LastNumeric && ftTo > FundType.FT_None &&
+                                (ftFrom = typeFrom.FundType()) <= FundType.FT_LastNumeric && ftFrom > FundType.FT_None)
                             {
                                 continue;
                             }
@@ -1075,7 +1075,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                         // Ignore the IntPtr/UIntPtr -> int/uint conversion in favor of
                         // the IntPtr/UIntPtr -> long/ulong conversion.
-                        if (fIntPtrOverride2 && (typeTo.isPredefType(PredefinedType.PT_INT) || typeTo.isPredefType(PredefinedType.PT_UINT)))
+                        if (fIntPtrOverride2 && (typeTo.IsPredefType(PredefinedType.PT_INT) || typeTo.IsPredefType(PredefinedType.PT_UINT)))
                             continue;
 
                         // Lift the conversion if needed.
@@ -1448,14 +1448,14 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Int64 valueInt = 0;
             double valueFlt = 0;
             CType typeDest = exprTypeDest.TypeOrNamespace.AsType();
-            FUNDTYPE ftSrc = exprSrc.type.fundType();
-            FUNDTYPE ftDest = typeDest.fundType();
-            bool srcIntegral = (ftSrc <= FUNDTYPE.FT_LASTINTEGRAL);
-            bool srcNumeric = (ftSrc <= FUNDTYPE.FT_LASTNUMERIC);
+            FundType ftSrc = exprSrc.type.FundType();
+            FundType ftDest = typeDest.FundType();
+            bool srcIntegral = (ftSrc <= FundType.FT_LastIntergral);
+            bool srcNumeric = (ftSrc <= FundType.FT_LastNumeric);
 
             EXPRCONSTANT constSrc = exprSrc.GetConst().asCONSTANT();
             Debug.Assert(constSrc != null);
-            if (ftSrc == FUNDTYPE.FT_STRUCT || ftDest == FUNDTYPE.FT_STRUCT)
+            if (ftSrc == FundType.FT_Struct || ftDest == FundType.FT_Struct)
             {
                 // Do constant folding involving decimal constants.
                 EXPR expr = bindDecimalConstCast(exprTypeDest, exprSrc.type, constSrc);
@@ -1487,10 +1487,10 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Get the source constant value into valueInt or valueFlt.
             if (srcIntegral)
             {
-                if (constSrc.type.fundType() == FUNDTYPE.FT_U8)
+                if (constSrc.type.FundType() == FundType.FT_U8)
                 {
                     // If we're going from ulong to something, make sure we can fit.
-                    if (ftDest == FUNDTYPE.FT_U8)
+                    if (ftDest == FundType.FT_U8)
                     {
                         CONSTVAL cv = GetExprConstants().Create(constSrc.getU64Value());
                         pexprDest = ExprFactory.CreateConstant(typeDest, cv);
@@ -1516,55 +1516,55 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // valueInt or valueFlt contains the result of the conversion.
             switch (ftDest)
             {
-                case FUNDTYPE.FT_I1:
+                case FundType.FT_I1:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = unchecked((sbyte)(valueInt & 0xFF));
                     break;
-                case FUNDTYPE.FT_I2:
+                case FundType.FT_I2:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = unchecked((short)(valueInt & 0xFFFF));
                     break;
-                case FUNDTYPE.FT_I4:
+                case FundType.FT_I4:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = unchecked((int)(valueInt & 0xFFFFFFFF));
                     break;
-                case FUNDTYPE.FT_I8:
+                case FundType.FT_I8:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     break;
-                case FUNDTYPE.FT_U1:
+                case FundType.FT_U1:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = (byte)(valueInt & 0xFF);
                     break;
-                case FUNDTYPE.FT_U2:
+                case FundType.FT_U2:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = (ushort)(valueInt & 0xFFFF);
                     break;
-                case FUNDTYPE.FT_U4:
+                case FundType.FT_U4:
                     if (!srcIntegral)
                     {
                         valueInt = (Int64)valueFlt;
                     }
                     valueInt = (uint)(valueInt & 0xFFFFFFFF);
                     break;
-                case FUNDTYPE.FT_U8:
+                case FundType.FT_U8:
                     if (!srcIntegral)
                     {
                         valueInt = (long)(ulong)valueFlt;
@@ -1579,11 +1579,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         }
                     }
                     break;
-                case FUNDTYPE.FT_R4:
-                case FUNDTYPE.FT_R8:
+                case FundType.FT_R4:
+                case FundType.FT_R8:
                     if (srcIntegral)
                     {
-                        if (ftSrc == FUNDTYPE.FT_U8)
+                        if (ftSrc == FundType.FT_U8)
                         {
                             valueFlt = (double)(ulong)valueInt;
                         }
@@ -1592,7 +1592,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                             valueFlt = (double)valueInt;
                         }
                     }
-                    if (ftDest == FUNDTYPE.FT_R4)
+                    if (ftDest == FundType.FT_R4)
                     {
                         // Force to R4 precision/range.
                         float f;
@@ -1610,15 +1610,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Create a new constant with the value in "valueInt" or "valueFlt".
             {
                 CONSTVAL cv = new CONSTVAL();
-                if (ftDest == FUNDTYPE.FT_U4)
+                if (ftDest == FundType.FT_U4)
                 {
                     cv.uiVal = (uint)valueInt;
                 }
-                else if (ftDest <= FUNDTYPE.FT_LASTNONLONG)
+                else if (ftDest <= FundType.FT_LastNonLong)
                 {
                     cv.iVal = (int)valueInt;
                 }
-                else if (ftDest <= FUNDTYPE.FT_LASTINTEGRAL)
+                else if (ftDest <= FundType.FT_LastIntergral)
                 {
                     cv = GetExprConstants().Create(valueInt);
                 }
@@ -1713,31 +1713,31 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 // Casting to decimal.
 
-                FUNDTYPE ftSrc = srcType.fundType();
+                FundType ftSrc = srcType.FundType();
                 Decimal result;
 
                 switch (ftSrc)
                 {
-                    case FUNDTYPE.FT_I1:
-                    case FUNDTYPE.FT_I2:
-                    case FUNDTYPE.FT_I4:
+                    case FundType.FT_I1:
+                    case FundType.FT_I2:
+                    case FundType.FT_I4:
                         result = Convert.ToDecimal(src.getVal().iVal);
                         break;
-                    case FUNDTYPE.FT_U1:
-                    case FUNDTYPE.FT_U2:
-                    case FUNDTYPE.FT_U4:
+                    case FundType.FT_U1:
+                    case FundType.FT_U2:
+                    case FundType.FT_U4:
                         result = Convert.ToDecimal(src.getVal().uiVal);
                         break;
-                    case FUNDTYPE.FT_R4:
+                    case FundType.FT_R4:
                         result = Convert.ToDecimal((float)src.getVal().doubleVal);
                         break;
-                    case FUNDTYPE.FT_R8:
+                    case FundType.FT_R8:
                         result = Convert.ToDecimal(src.getVal().doubleVal);
                         break;
-                    case FUNDTYPE.FT_U8:
+                    case FundType.FT_U8:
                         result = Convert.ToDecimal((ulong)src.getVal().longVal);
                         break;
-                    case FUNDTYPE.FT_I8:
+                    case FundType.FT_I8:
                         result = Convert.ToDecimal(src.getVal().longVal);
                         break;
                     default:
@@ -1755,43 +1755,43 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // Casting from decimal
                 Decimal decTrunc = 0;
 
-                FUNDTYPE ftDest = destType.fundType();
+                FundType ftDest = destType.FundType();
                 try
                 {
-                    if (ftDest != FUNDTYPE.FT_R4 && ftDest != FUNDTYPE.FT_R8)
+                    if (ftDest != FundType.FT_R4 && ftDest != FundType.FT_R8)
                     {
                         decTrunc = Decimal.Truncate(src.getVal().decVal);
                     }
                     switch (ftDest)
                     {
-                        case FUNDTYPE.FT_I1:
+                        case FundType.FT_I1:
                             cv.iVal = Convert.ToSByte(decTrunc);
                             break;
-                        case FUNDTYPE.FT_U1:
+                        case FundType.FT_U1:
                             cv.uiVal = Convert.ToByte(decTrunc);
                             break;
-                        case FUNDTYPE.FT_I2:
+                        case FundType.FT_I2:
                             cv.iVal = Convert.ToInt16(decTrunc);
                             break;
-                        case FUNDTYPE.FT_U2:
+                        case FundType.FT_U2:
                             cv.uiVal = Convert.ToUInt16(decTrunc);
                             break;
-                        case FUNDTYPE.FT_I4:
+                        case FundType.FT_I4:
                             cv.iVal = Convert.ToInt32(decTrunc);
                             break;
-                        case FUNDTYPE.FT_U4:
+                        case FundType.FT_U4:
                             cv.uiVal = Convert.ToUInt32(decTrunc);
                             break;
-                        case FUNDTYPE.FT_I8:
+                        case FundType.FT_I8:
                             cv = GetExprConstants().Create(Convert.ToInt64(decTrunc));
                             break;
-                        case FUNDTYPE.FT_U8:
+                        case FundType.FT_U8:
                             cv = GetExprConstants().Create(Convert.ToUInt64(decTrunc));
                             break;
-                        case FUNDTYPE.FT_R4:
+                        case FundType.FT_R4:
                             cv = GetExprConstants().Create(Convert.ToSingle(src.getVal().decVal));
                             break;
-                        case FUNDTYPE.FT_R8:
+                        case FundType.FT_R8:
                             cv = GetExprConstants().Create(Convert.ToDouble(src.getVal().decVal));
                             break;
                         default:

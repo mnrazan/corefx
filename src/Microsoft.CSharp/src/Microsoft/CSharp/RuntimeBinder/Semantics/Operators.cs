@@ -653,7 +653,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 return false;
             }
-            if (!info.type1.isDelegateType() && !info.type2.isDelegateType())
+            if (!info.type1.IsDelegateType() && !info.type2.IsDelegateType())
             {
                 return false;
             }
@@ -673,8 +673,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // for this binary operator. It's possible that we add two candidates, in which case they will compete
             // in overload resolution. Or we could add no candidates.
 
-            bool t1tot2 = info.type2.isDelegateType() && canConvert(info.arg1, info.type2);
-            bool t2tot1 = info.type1.isDelegateType() && canConvert(info.arg2, info.type1);
+            bool t1tot2 = info.type2.IsDelegateType() && canConvert(info.arg1, info.type2);
+            bool t2tot1 = info.type1.IsDelegateType() && canConvert(info.arg2, info.type1);
 
             if (t1tot2)
             {
@@ -800,7 +800,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private bool GetEnumBinOpSigs(List<BinOpFullSig> prgbofs, BinOpArgInfo info)
         {
-            if (!info.typeRaw1.isEnumType() && !info.typeRaw2.isEnumType())
+            if (!info.typeRaw1.IsEnumType() && !info.typeRaw2.IsEnumType())
             {
                 return false;
             }
@@ -825,13 +825,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             bool isValidForEnum;
 
-            if (info.typeRaw1.isEnumType())
+            if (info.typeRaw1.IsEnumType())
             {
-                isValidForEnum = (info.typeRaw2 == info.typeRaw1.underlyingEnumType() && info.ValidForEnumAndUnderlyingType());
+                isValidForEnum = (info.typeRaw2 == info.typeRaw1.UnderlyingEnumType() && info.ValidForEnumAndUnderlyingType());
             }
             else
             {
-                isValidForEnum = (info.typeRaw1 == info.typeRaw2.underlyingEnumType() && info.ValidForUnderlyingTypeAndEnum());
+                isValidForEnum = (info.typeRaw1 == info.typeRaw2.UnderlyingEnumType() && info.ValidForUnderlyingTypeAndEnum());
             }
 
             if (isValidForEnum)
@@ -843,15 +843,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Now deal with the conversion cases. Since there are no conversions from enum types to other
             // enum types we never need to do both cases.
 
-            if (info.typeRaw1.isEnumType())
+            if (info.typeRaw1.IsEnumType())
             {
                 isValidForEnum = info.ValidForEnum() && CanConvertArg2(info, info.typeRaw1, out grflt, out typeSig1, out typeSig2) ||
-                    info.ValidForEnumAndUnderlyingType() && CanConvertArg2(info, info.typeRaw1.underlyingEnumType(), out grflt, out typeSig1, out typeSig2);
+                    info.ValidForEnumAndUnderlyingType() && CanConvertArg2(info, info.typeRaw1.UnderlyingEnumType(), out grflt, out typeSig1, out typeSig2);
             }
             else
             {
                 isValidForEnum = info.ValidForEnum() && CanConvertArg1(info, info.typeRaw2, out grflt, out typeSig1, out typeSig2) ||
-                    info.ValidForEnumAndUnderlyingType() && CanConvertArg1(info, info.typeRaw2.underlyingEnumType(), out grflt, out typeSig1, out typeSig2);
+                    info.ValidForEnumAndUnderlyingType() && CanConvertArg1(info, info.typeRaw2.UnderlyingEnumType(), out grflt, out typeSig1, out typeSig2);
             }
 
             if (isValidForEnum)
@@ -866,9 +866,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             switch (ek)
             {
                 case ExpressionKind.EK_ADD:
-                    return info.typeRaw1.isEnumType() ^ info.typeRaw2.isEnumType();
+                    return info.typeRaw1.IsEnumType() ^ info.typeRaw2.IsEnumType();
                 case ExpressionKind.EK_SUB:
-                    return info.typeRaw1.isEnumType() | info.typeRaw2.isEnumType();
+                    return info.typeRaw1.IsEnumType() | info.typeRaw2.IsEnumType();
             }
 
             return false;
@@ -1006,22 +1006,22 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType typeDel = GetReqPDT(PredefinedType.PT_DELEGATE);
 
             if (canConvert(info.arg1, typeDel) && canConvert(info.arg2, typeDel) &&
-                !type1.isDelegateType() && !type2.isDelegateType())
+                !type1.IsDelegateType() && !type2.IsDelegateType())
             {
                 prgbofs.Add(new BinOpFullSig(typeDel, typeDel, BindDelBinOp, OpSigFlags.Convert, LiftFlags.None, BinOpFuncKind.DelBinOp));
             }
 
             // The reference type equality operators only handle reference types.
-            FUNDTYPE ft1 = type1.fundType();
-            FUNDTYPE ft2 = type2.fundType();
+            FundType ft1 = type1.FundType();
+            FundType ft2 = type2.FundType();
 
             switch (ft1)
             {
                 default:
                     return false;
-                case FUNDTYPE.FT_REF:
+                case FundType.FT_Reference:
                     break;
-                case FUNDTYPE.FT_VAR:
+                case FundType.FT_Var:
                     if (type1.AsTypeParameterType().IsValueType() || (!type1.AsTypeParameterType().IsReferenceType() && !type2.IsNullType()))
                         return false;
                     type1 = type1.AsTypeParameterType().GetEffectiveBaseClass();
@@ -1040,9 +1040,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 default:
                     return false;
-                case FUNDTYPE.FT_REF:
+                case FundType.FT_Reference:
                     break;
-                case FUNDTYPE.FT_VAR:
+                case FundType.FT_Var:
                     if (type2.AsTypeParameterType().IsValueType() || (!type2.AsTypeParameterType().IsReferenceType() && !type1.IsNullType()))
                         return false;
                     type2 = type2.AsTypeParameterType().GetEffectiveBaseClass();
@@ -1060,22 +1060,22 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (!canCast(type1, type2, CONVERTTYPE.NOUDC) && !canCast(type2, type1, CONVERTTYPE.NOUDC))
                 return false;
 
-            if (type1.isInterfaceType() || type1.isPredefType(PredefinedType.PT_STRING) || GetSymbolLoader().HasBaseConversion(type1, typeDel))
+            if (type1.IsInterfaceType() || type1.IsPredefType(PredefinedType.PT_STRING) || GetSymbolLoader().HasBaseConversion(type1, typeDel))
                 type1 = typeObj;
             else if (type1.IsArrayType())
                 type1 = GetReqPDT(PredefinedType.PT_ARRAY);
-            else if (!type1.isClassType())
+            else if (!type1.IsClassType())
                 return false;
 
-            if (type2.isInterfaceType() || type2.isPredefType(PredefinedType.PT_STRING) || GetSymbolLoader().HasBaseConversion(type2, typeDel))
+            if (type2.IsInterfaceType() || type2.IsPredefType(PredefinedType.PT_STRING) || GetSymbolLoader().HasBaseConversion(type2, typeDel))
                 type2 = typeObj;
             else if (type2.IsArrayType())
                 type2 = GetReqPDT(PredefinedType.PT_ARRAY);
-            else if (!type2.isClassType())
+            else if (!type2.IsClassType())
                 return false;
 
-            Debug.Assert(type1.isClassType() && !type1.isPredefType(PredefinedType.PT_STRING) && !type1.isPredefType(PredefinedType.PT_DELEGATE));
-            Debug.Assert(type2.isClassType() && !type2.isPredefType(PredefinedType.PT_STRING) && !type2.isPredefType(PredefinedType.PT_DELEGATE));
+            Debug.Assert(type1.IsClassType() && !type1.IsPredefType(PredefinedType.PT_STRING) && !type1.IsPredefType(PredefinedType.PT_DELEGATE));
+            Debug.Assert(type2.IsClassType() && !type2.IsPredefType(PredefinedType.PT_STRING) && !type2.IsPredefType(PredefinedType.PT_DELEGATE));
 
             if (GetSymbolLoader().HasBaseConversion(type2, type1))
                 typeCls = type1;
@@ -1376,7 +1376,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             ppResult = null;
             CType pArgumentType = pArgument.type;
             CType pRawType = pArgumentType.StripNubs();
-            PredefinedType ptRaw = pRawType.isPredefined() ? pRawType.getPredefType() : PredefinedType.PT_COUNT;
+            PredefinedType ptRaw = pRawType.IsPredefined() ? pRawType.getPredefType() : PredefinedType.PT_COUNT;
 
             // Find all applicable operator signatures.
             // First check for special ones (enum, ptr) and check for user defined ops.
@@ -1384,7 +1384,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (ptRaw > PredefinedType.PT_ULONG)
             {
                 // Enum types are special in that they carry a set of "predefined" operators (~ and inc/dec).
-                if (pRawType.isEnumType())
+                if (pRawType.IsEnumType())
                 {
                     if ((unaryOpMask & (UnaOpMask.Tilde | UnaOpMask.IncDec)) != 0)
                     {
@@ -1403,7 +1403,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         if (unaryOpKind == UnaOpKind.Tilde)
                         {
                             pSignatures.Add(new UnaOpFullSig(
-                                    typeSig.getAggregate().GetUnderlyingType(),
+                                    typeSig.GetAggregate().GetUnderlyingType(),
                                     BindEnumUnaOp,
                                     liftFlags,
                                     UnaOpFuncKind.EnumUnaOp));
@@ -1413,7 +1413,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                             // For enums, we want to add the signature as the underlying type so that we'll
                             // perform the conversions to and from the enum type.
                             pSignatures.Add(new UnaOpFullSig(
-                                    typeSig.getAggregate().GetUnderlyingType(),
+                                    typeSig.GetAggregate().GetUnderlyingType(),
                                     null,
                                     liftFlags,
                                     UnaOpFuncKind.None));
@@ -1501,8 +1501,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             CType pArgumentType = pArgument.type;
             CType pRawType = pArgumentType.StripNubs();
-            PredefinedType pt = pArgumentType.isPredefined() ? pArgumentType.getPredefType() : PredefinedType.PT_COUNT;
-            PredefinedType ptRaw = pRawType.isPredefined() ? pRawType.getPredefType() : PredefinedType.PT_COUNT;
+            PredefinedType pt = pArgumentType.IsPredefined() ? pArgumentType.getPredefType() : PredefinedType.PT_COUNT;
+            PredefinedType ptRaw = pRawType.IsPredefined() ? pRawType.getPredefType() : PredefinedType.PT_COUNT;
 
             for (int index = 0; index < g_rguos.Length; index++)
             {
@@ -1674,7 +1674,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindIntBinOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
-            Debug.Assert(arg1.type.isPredefined() && arg2.type.isPredefined() && arg1.type.getPredefType() == arg2.type.getPredefType());
+            Debug.Assert(arg1.type.IsPredefined() && arg2.type.IsPredefined() && arg1.type.getPredefType() == arg2.type.getPredefType());
             return BindIntOp(ek, flags, arg1, arg2, arg1.type.getPredefType());
         }
 
@@ -1684,7 +1684,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindIntUnaOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg)
         {
-            Debug.Assert(arg.type.isPredefined());
+            Debug.Assert(arg.type.IsPredefined());
             return BindIntOp(ek, flags, arg, null, arg.type.getPredefType());
         }
 
@@ -1694,7 +1694,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindRealBinOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
-            Debug.Assert(arg1.type.isPredefined() && arg2.type.isPredefined() && arg1.type.getPredefType() == arg2.type.getPredefType());
+            Debug.Assert(arg1.type.IsPredefined() && arg2.type.IsPredefined() && arg1.type.getPredefType() == arg2.type.getPredefType());
             return bindFloatOp(ek, flags, arg1, arg2);
         }
 
@@ -1704,7 +1704,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindRealUnaOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg)
         {
-            Debug.Assert(arg.type.isPredefined());
+            Debug.Assert(arg.type.IsPredefined());
             return bindFloatOp(ek, flags, arg, null);
         }
 
@@ -1724,8 +1724,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             CType typeRaw = uofs.GetType().StripNubs();
 
-            FUNDTYPE ft = typeRaw.fundType();
-            if (ft == FUNDTYPE.FT_R8 || ft == FUNDTYPE.FT_R4)
+            FundType ft = typeRaw.FundType();
+            if (ft == FundType.FT_R8 || ft == FundType.FT_R4)
             {
                 flags = ~EXPRFLAG.EXF_CHECKOVERFLOW;
             }
@@ -1746,49 +1746,49 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CONSTVAL cv = new CONSTVAL();
             EXPR pExprResult = null;
 
-            if (type.isEnumType() && type.fundType() > FUNDTYPE.FT_LASTINTEGRAL)
+            if (type.IsEnumType() && type.FundType() > FundType.FT_LastIntergral)
             {
                 // This is an error case when enum derives from an illegal type. Just treat it as an int.
                 type = GetReqPDT(PredefinedType.PT_INT);
             }
 
-            FUNDTYPE ft = type.fundType();
+            FundType ft = type.FundType();
             CType typeTmp = type;
 
             switch (ft)
             {
                 default:
                     {
-                        Debug.Assert(type.isPredefType(PredefinedType.PT_DECIMAL));
+                        Debug.Assert(type.IsPredefType(PredefinedType.PT_DECIMAL));
                         ek = ek == ExpressionKind.EK_ADD ? ExpressionKind.EK_DECIMALINC : ExpressionKind.EK_DECIMALDEC;
                         PREDEFMETH predefMeth = ek == ExpressionKind.EK_DECIMALINC ? PREDEFMETH.PM_DECIMAL_OPINCREMENT : PREDEFMETH.PM_DECIMAL_OPDECREMENT;
                         pExprResult = CreateUnaryOpForPredefMethodCall(ek, predefMeth, type, exprVal);
                     }
                     break;
-                case FUNDTYPE.FT_PTR:
+                case FundType.FT_Pointer:
                     cv.iVal = 1;
                     pExprResult = BindPtrBinOp(ek, flags, exprVal, GetExprFactory().CreateConstant(GetReqPDT(PredefinedType.PT_INT), cv));
                     break;
-                case FUNDTYPE.FT_I1:
-                case FUNDTYPE.FT_I2:
-                case FUNDTYPE.FT_U1:
-                case FUNDTYPE.FT_U2:
+                case FundType.FT_I1:
+                case FundType.FT_I2:
+                case FundType.FT_U1:
+                case FundType.FT_U2:
                     typeTmp = GetReqPDT(PredefinedType.PT_INT);
                     cv.iVal = 1;
                     pExprResult = LScalar(ek, flags, exprVal, type, cv, pExprResult, typeTmp);
                     break;
-                case FUNDTYPE.FT_I4:
-                case FUNDTYPE.FT_U4:
+                case FundType.FT_I4:
+                case FundType.FT_U4:
                     cv.iVal = 1;
                     pExprResult = LScalar(ek, flags, exprVal, type, cv, pExprResult, typeTmp);
                     break;
-                case FUNDTYPE.FT_I8:
-                case FUNDTYPE.FT_U8:
+                case FundType.FT_I8:
+                case FundType.FT_U8:
                     cv = GetExprConstants().Create((long)1);
                     pExprResult = LScalar(ek, flags, exprVal, type, cv, pExprResult, typeTmp);
                     break;
-                case FUNDTYPE.FT_R4:
-                case FUNDTYPE.FT_R8:
+                case FundType.FT_R4:
+                case FundType.FT_R8:
                     cv = GetExprConstants().Create(1.0);
                     pExprResult = LScalar(ek, flags, exprVal, type, cv, pExprResult, typeTmp);
                     break;
@@ -1801,9 +1801,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR LScalar(ExpressionKind ek, EXPRFLAG flags, EXPR exprVal, CType type, CONSTVAL cv, EXPR pExprResult, CType typeTmp)
         {
             CType typeOne = type;
-            if (typeOne.isEnumType())
+            if (typeOne.IsEnumType())
             {
-                typeOne = typeOne.underlyingEnumType();
+                typeOne = typeOne.UnderlyingEnumType();
             }
             pExprResult = GetExprFactory().CreateBinop(ek, typeTmp, exprVal, GetExprFactory().CreateConstant(typeOne, cv));
             pExprResult.flags |= flags;
@@ -1891,7 +1891,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindDecBinOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
-            Debug.Assert(arg1.type.isPredefType(PredefinedType.PT_DECIMAL) && arg2.type.isPredefType(PredefinedType.PT_DECIMAL));
+            Debug.Assert(arg1.type.IsPredefType(PredefinedType.PT_DECIMAL) && arg2.type.IsPredefType(PredefinedType.PT_DECIMAL));
 
             CType typeDec = GetOptPDT(PredefinedType.PT_DECIMAL);
             Debug.Assert(typeDec != null);
@@ -1939,7 +1939,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindDecUnaOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg)
         {
-            Debug.Assert(arg.type.isPredefType(PredefinedType.PT_DECIMAL));
+            Debug.Assert(arg.type.IsPredefType(PredefinedType.PT_DECIMAL));
             Debug.Assert(ek == ExpressionKind.EK_NEG || ek == ExpressionKind.EK_UPLUS);
 
             CType typeDec = GetOptPDT(PredefinedType.PT_DECIMAL);
@@ -1960,7 +1960,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR BindStrBinOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
             Debug.Assert(ek == ExpressionKind.EK_ADD);
-            Debug.Assert(arg1.type.isPredefType(PredefinedType.PT_STRING) || arg2.type.isPredefType(PredefinedType.PT_STRING));
+            Debug.Assert(arg1.type.IsPredefType(PredefinedType.PT_STRING) || arg2.type.IsPredefType(PredefinedType.PT_STRING));
             return bindStringConcat(arg1, arg2);
         }
 
@@ -1972,8 +1972,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR BindShiftOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
             Debug.Assert(ek == ExpressionKind.EK_LSHIFT || ek == ExpressionKind.EK_RSHIFT);
-            Debug.Assert(arg1.type.isPredefined());
-            Debug.Assert(arg2.type.isPredefType(PredefinedType.PT_INT));
+            Debug.Assert(arg1.type.IsPredefined());
+            Debug.Assert(arg2.type.IsPredefType(PredefinedType.PT_INT));
 
             PredefinedType ptOp = arg1.type.getPredefType();
             Debug.Assert(ptOp == PredefinedType.PT_INT || ptOp == PredefinedType.PT_UINT || ptOp == PredefinedType.PT_LONG || ptOp == PredefinedType.PT_ULONG);
@@ -1989,8 +1989,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             Debug.Assert(arg1 != null);
             Debug.Assert(arg2 != null);
-            Debug.Assert(arg1.type.isPredefType(PredefinedType.PT_BOOL) || (arg1.type.IsNullableType() && arg2.type.AsNullableType().GetUnderlyingType().isPredefType(PredefinedType.PT_BOOL)));
-            Debug.Assert(arg2.type.isPredefType(PredefinedType.PT_BOOL) || (arg2.type.IsNullableType() && arg2.type.AsNullableType().GetUnderlyingType().isPredefType(PredefinedType.PT_BOOL)));
+            Debug.Assert(arg1.type.IsPredefType(PredefinedType.PT_BOOL) || (arg1.type.IsNullableType() && arg2.type.AsNullableType().GetUnderlyingType().IsPredefType(PredefinedType.PT_BOOL)));
+            Debug.Assert(arg2.type.IsPredefType(PredefinedType.PT_BOOL) || (arg2.type.IsNullableType() && arg2.type.AsNullableType().GetUnderlyingType().IsPredefType(PredefinedType.PT_BOOL)));
 
             EXPR exprRes = GetExprFactory().CreateBinop(ek, GetReqPDT(PredefinedType.PT_BOOL), arg1, arg2);
 
@@ -2000,8 +2000,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR BindBoolBitwiseOp(ExpressionKind ek, EXPRFLAG flags, EXPR expr1, EXPR expr2, BinOpFullSig bofs)
         {
             Debug.Assert(ek == ExpressionKind.EK_BITAND || ek == ExpressionKind.EK_BITOR);
-            Debug.Assert(expr1.type.isPredefType(PredefinedType.PT_BOOL) || expr1.type.IsNullableType() && expr1.type.AsNullableType().GetUnderlyingType().isPredefType(PredefinedType.PT_BOOL));
-            Debug.Assert(expr2.type.isPredefType(PredefinedType.PT_BOOL) || expr2.type.IsNullableType() && expr2.type.AsNullableType().GetUnderlyingType().isPredefType(PredefinedType.PT_BOOL));
+            Debug.Assert(expr1.type.IsPredefType(PredefinedType.PT_BOOL) || expr1.type.IsNullableType() && expr1.type.AsNullableType().GetUnderlyingType().IsPredefType(PredefinedType.PT_BOOL));
+            Debug.Assert(expr2.type.IsPredefType(PredefinedType.PT_BOOL) || expr2.type.IsNullableType() && expr2.type.AsNullableType().GetUnderlyingType().IsPredefType(PredefinedType.PT_BOOL));
 
             if (expr1.type.IsNullableType() || expr2.type.IsNullableType())
             {
@@ -2044,7 +2044,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         */
         private EXPR BindBoolUnaOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg)
         {
-            Debug.Assert(arg.type.isPredefType(PredefinedType.PT_BOOL));
+            Debug.Assert(arg.type.IsPredefType(PredefinedType.PT_BOOL));
             Debug.Assert(ek == ExpressionKind.EK_LOGNOT);
 
             // Get the result type and operand type.
@@ -2071,7 +2071,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR BindStrCmpOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
             Debug.Assert(ek == ExpressionKind.EK_EQ || ek == ExpressionKind.EK_NE);
-            Debug.Assert(arg1.type.isPredefType(PredefinedType.PT_STRING) && arg2.type.isPredefType(PredefinedType.PT_STRING));
+            Debug.Assert(arg1.type.IsPredefType(PredefinedType.PT_STRING) && arg2.type.IsPredefType(PredefinedType.PT_STRING));
 
             // Get the predefined method for string comparison, and then stash it in the EXPR so we can 
             // transform it later.
@@ -2103,7 +2103,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR BindDelBinOp(ExpressionKind ek, EXPRFLAG flags, EXPR arg1, EXPR arg2)
         {
             Debug.Assert(ek == ExpressionKind.EK_ADD || ek == ExpressionKind.EK_SUB || ek == ExpressionKind.EK_EQ || ek == ExpressionKind.EK_NE);
-            Debug.Assert(arg1.type == arg2.type && (arg1.type.isDelegateType() || arg1.type.isPredefType(PredefinedType.PT_DELEGATE)));
+            Debug.Assert(arg1.type == arg2.type && (arg1.type.IsDelegateType() || arg1.type.IsPredefType(PredefinedType.PT_DELEGATE)));
 
             PREDEFMETH predefMeth = (PREDEFMETH)0;
             CType RetType = null;
@@ -2148,19 +2148,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(typeEnum != null);
             PredefinedType ptOp;
 
-            switch (typeEnum.fundType())
+            switch (typeEnum.FundType())
             {
                 default:
                     // Promote all smaller types to int.
                     ptOp = PredefinedType.PT_INT;
                     break;
-                case FUNDTYPE.FT_U4:
+                case FundType.FT_U4:
                     ptOp = PredefinedType.PT_UINT;
                     break;
-                case FUNDTYPE.FT_I8:
+                case FundType.FT_I8:
                     ptOp = PredefinedType.PT_LONG;
                     break;
-                case FUNDTYPE.FT_U8:
+                case FundType.FT_U8:
                     ptOp = PredefinedType.PT_ULONG;
                     break;
             }
@@ -2178,7 +2178,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             if (exprRes.type != typeDst)
             {
-                Debug.Assert(!typeDst.isPredefType(PredefinedType.PT_BOOL));
+                Debug.Assert(!typeDst.IsPredefType(PredefinedType.PT_BOOL));
                 exprRes = mustCast(exprRes, typeDst, CONVERTTYPE.NOUDC);
             }
 
@@ -2192,11 +2192,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType nonNullableType2 = arg2.type.IsNullableType() ? arg2.type.AsNullableType().UnderlyingType : arg2.type;
             if (nonNullableType1.IsNullType())
             {
-                nonNullableType1 = nonNullableType2.underlyingEnumType();
+                nonNullableType1 = nonNullableType2.UnderlyingEnumType();
             }
             else if (nonNullableType2.IsNullType())
             {
-                nonNullableType2 = nonNullableType1.underlyingEnumType();
+                nonNullableType2 = nonNullableType1.UnderlyingEnumType();
             }
 
             NullableType typeDst = GetTypes().GetNullable(GetEnumBinOpType(ek, nonNullableType1, nonNullableType2, out AggregateType typeEnum));
@@ -2204,19 +2204,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(typeEnum != null);
             PredefinedType ptOp;
 
-            switch (typeEnum.fundType())
+            switch (typeEnum.FundType())
             {
                 default:
                     // Promote all smaller types to int.
                     ptOp = PredefinedType.PT_INT;
                     break;
-                case FUNDTYPE.FT_U4:
+                case FundType.FT_U4:
                     ptOp = PredefinedType.PT_UINT;
                     break;
-                case FUNDTYPE.FT_I8:
+                case FundType.FT_I8:
                     ptOp = PredefinedType.PT_LONG;
                     break;
-                case FUNDTYPE.FT_U8:
+                case FundType.FT_U8:
                     ptOp = PredefinedType.PT_ULONG;
                     break;
             }
@@ -2251,24 +2251,24 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             Debug.Assert(ek == ExpressionKind.EK_BITNOT);
             Debug.Assert(arg.isCAST());
-            Debug.Assert(arg.asCAST().GetArgument().type.isEnumType());
+            Debug.Assert(arg.asCAST().GetArgument().type.IsEnumType());
 
             PredefinedType ptOp;
             CType typeEnum = arg.asCAST().GetArgument().type;
 
-            switch (typeEnum.fundType())
+            switch (typeEnum.FundType())
             {
                 default:
                     // Promote all smaller types to int.
                     ptOp = PredefinedType.PT_INT;
                     break;
-                case FUNDTYPE.FT_U4:
+                case FundType.FT_U4:
                     ptOp = PredefinedType.PT_UINT;
                     break;
-                case FUNDTYPE.FT_I8:
+                case FundType.FT_I8:
                     ptOp = PredefinedType.PT_LONG;
                     break;
-                case FUNDTYPE.FT_U8:
+                case FundType.FT_U8:
                     ptOp = PredefinedType.PT_ULONG;
                     break;
             }
@@ -2447,7 +2447,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return BadOperatorTypesError(ExpressionKind.EK_NEG, op, null);
             }
 
-            if (ptOp == PredefinedType.PT_UINT && op.type.fundType() == FUNDTYPE.FT_U4)
+            if (ptOp == PredefinedType.PT_UINT && op.type.FundType() == FundType.FT_U4)
             {
                 EXPRCLASS exprObj = GetExprFactory().MakeClass(GetReqPDT(PredefinedType.PT_LONG));
                 op = mustConvertCore(op, exprObj, CONVERTTYPE.NOUDC);
@@ -2467,7 +2467,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             //Debug.Assert(kind.isRelational() || kind.isArithmetic());
             Debug.Assert(op2 == null || op1.type == op2.type);
-            Debug.Assert(op1.type.isPredefType(PredefinedType.PT_FLOAT) || op1.type.isPredefType(PredefinedType.PT_DOUBLE));
+            Debug.Assert(op1.type.IsPredefType(PredefinedType.PT_FLOAT) || op1.type.IsPredefType(PredefinedType.PT_DOUBLE));
 
             // Allocate the result expression.
             CType typeDest = kind.isRelational() ? GetReqPDT(PredefinedType.PT_BOOL) : op1.type;
@@ -2584,7 +2584,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             for (; ;)
             {
-                switch (type.GetTypeKind())
+                switch (type.TypeKind)
                 {
                     case TypeKind.TK_NullableType:
                         type = type.StripNubs();
@@ -2593,7 +2593,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         type = type.AsTypeParameterType().GetEffectiveBaseClass();
                         break;
                     case TypeKind.TK_AggregateType:
-                        if ((type.isClassType() || type.isStructType()) && !type.AsAggregateType().getAggregate().IsSkipUDOps())
+                        if ((type.IsClassType() || type.IsStructType()) && !type.AsAggregateType().GetAggregate().IsSkipUDOps())
                         {
                             return type.AsAggregateType();
                         }
@@ -2645,7 +2645,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 case ExpressionKind.EK_EQ:
                 case ExpressionKind.EK_NE:
-                    if (!typeRet.isPredefType(PredefinedType.PT_BOOL))
+                    if (!typeRet.IsPredefType(PredefinedType.PT_BOOL))
                     {
                         return false;
                     }
@@ -2658,7 +2658,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 case ExpressionKind.EK_GE:
                 case ExpressionKind.EK_LT:
                 case ExpressionKind.EK_LE:
-                    if (!typeRet.isPredefType(PredefinedType.PT_BOOL))
+                    if (!typeRet.IsPredefType(PredefinedType.PT_BOOL))
                     {
                         return false;
                     }
@@ -2715,9 +2715,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Name name = ekName(ek);
             Debug.Assert(name != null);
             bool foundSome = false;
-            for (MethodSymbol methCur = GetSymbolLoader().LookupAggMember(name, type.getAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
+            for (MethodSymbol methCur = GetSymbolLoader().LookupAggMember(name, type.GetAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
                 methCur != null;
-                methCur = GetSymbolLoader().LookupNextSym(methCur, type.getAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol())
+                methCur = GetSymbolLoader().LookupNextSym(methCur, type.GetAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol())
             {
                 if (UserDefinedBinaryOperatorIsApplicable(candidateList, ek, methCur, type, arg1, arg2, fDontLift))
                 {
@@ -2872,7 +2872,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 case ExpressionKind.EK_EQ:
                 case ExpressionKind.EK_NE:
                     Debug.Assert(paramsRaw[0] == paramsRaw[1]);
-                    Debug.Assert(typeRetRaw.isPredefType(PredefinedType.PT_BOOL));
+                    Debug.Assert(typeRetRaw.IsPredefType(PredefinedType.PT_BOOL));
                     // These ones don't lift the return type. Instead, if either side is null, the result is false.
                     typeRet = typeRetRaw;
                     break;
@@ -2880,7 +2880,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 case ExpressionKind.EK_GE:
                 case ExpressionKind.EK_LT:
                 case ExpressionKind.EK_LE:
-                    Debug.Assert(typeRetRaw.isPredefType(PredefinedType.PT_BOOL));
+                    Debug.Assert(typeRetRaw.IsPredefType(PredefinedType.PT_BOOL));
                     // These ones don't lift the return type. Instead, if either side is null, the result is false.
                     typeRet = typeRetRaw;
                     break;
@@ -2918,15 +2918,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private AggregateType GetEnumBinOpType(ExpressionKind ek, CType argType1, CType argType2, out AggregateType ppEnumType)
         {
-            Debug.Assert(argType1.isEnumType() || argType2.isEnumType());
+            Debug.Assert(argType1.IsEnumType() || argType2.IsEnumType());
 
             AggregateType type1 = argType1.AsAggregateType();
             AggregateType type2 = argType2.AsAggregateType();
 
-            AggregateType typeEnum = type1.isEnumType() ? type1 : type2;
+            AggregateType typeEnum = type1.IsEnumType() ? type1 : type2;
 
-            Debug.Assert(type1 == typeEnum || type1 == typeEnum.underlyingEnumType());
-            Debug.Assert(type2 == typeEnum || type2 == typeEnum.underlyingEnumType());
+            Debug.Assert(type1 == typeEnum || type1 == typeEnum.UnderlyingEnumType());
+            Debug.Assert(type2 == typeEnum || type2 == typeEnum.UnderlyingEnumType());
 
             AggregateType typeDst = typeEnum;
 
@@ -2944,7 +2944,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                 case ExpressionKind.EK_SUB:
                     if (type1 == type2)
-                        typeDst = typeEnum.underlyingEnumType();
+                        typeDst = typeEnum.UnderlyingEnumType();
                     break;
 
                 default:

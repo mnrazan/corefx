@@ -4,26 +4,26 @@
 
 namespace Microsoft.CSharp.RuntimeBinder.Semantics
 {
-    internal enum FUNDTYPE
+    internal enum FundType
     {
-        FT_NONE,         // No fundamental type
+        FT_None,         // No fundamental type
         FT_I1,
         FT_I2,
         FT_I4,
         FT_U1,
         FT_U2,
         FT_U4,
-        FT_LASTNONLONG = FT_U4,   // Last one that fits in a int.
+        FT_LastNonLong = FT_U4,   // Last one that fits in a int.
         FT_I8,
         FT_U8,           // integral types
-        FT_LASTINTEGRAL = FT_U8,
+        FT_LastIntergral = FT_U8,
         FT_R4,
         FT_R8,           // floating types
-        FT_LASTNUMERIC = FT_R8,
-        FT_REF,          // reference type
-        FT_STRUCT,       // structure type
-        FT_PTR,          // pointer to unmanaged memory
-        FT_VAR,          // polymorphic, unbounded, not yet committed
-        FT_COUNT        // number of enumerators.
+        FT_LastNumeric = FT_R8,
+        FT_Reference,    // reference type
+        FT_Struct,       // structure type
+        FT_Pointer,      // pointer to unmanaged memory
+        FT_Var,          // polymorphic, unbounded, not yet committed
+        FT_Count         // number of enumerators.
     }
 }

@@ -134,9 +134,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             // Loop through symbols.
             Symbol symCur = null;
-            for (symCur = GetSymbolLoader().LookupAggMember(_name, typeCur.getAggregate(), symbmask_t.MASK_ALL);
+            for (symCur = GetSymbolLoader().LookupAggMember(_name, typeCur.GetAggregate(), symbmask_t.MASK_ALL);
                  symCur != null;
-                 symCur = GetSymbolLoader().LookupNextSym(symCur, typeCur.getAggregate(), symbmask_t.MASK_ALL))
+                 symCur = GetSymbolLoader().LookupNextSym(symCur, typeCur.GetAggregate(), symbmask_t.MASK_ALL))
             {
                 // Check for arity.
                 switch (symCur.getKind())
@@ -280,7 +280,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                 if (_swtFirst)
                 {
-                    if (!typeCur.isInterfaceType())
+                    if (!typeCur.IsInterfaceType())
                     {
                         // Non-interface case.
                         Debug.Assert(_fMulti || typeCur == _prgtype[0]);
@@ -375,7 +375,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             System.Runtime.CompilerServices.DynamicAttribute da = null;
             if (sym.IsFieldSymbol())
             {
-                if (!sym.AsFieldSymbol().getType().isPredefType(PredefinedType.PT_OBJECT))
+                if (!sym.AsFieldSymbol().getType().IsPredefType(PredefinedType.PT_OBJECT))
                 {
                     return false;
                 }
@@ -388,7 +388,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             else
             {
                 Debug.Assert(sym.IsPropertySymbol());
-                if (!sym.AsPropertySymbol().getType().isPredefType(PredefinedType.PT_OBJECT))
+                if (!sym.AsPropertySymbol().getType().IsPredefType(PredefinedType.PT_OBJECT))
                 {
                     return false;
                 }
@@ -418,7 +418,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private bool LookupInClass(AggregateType typeStart, ref AggregateType ptypeEnd)
         {
             Debug.Assert(!_swtFirst || _fMulti);
-            Debug.Assert(typeStart != null && !typeStart.isInterfaceType() && (ptypeEnd == null || typeStart != ptypeEnd));
+            Debug.Assert(typeStart != null && !typeStart.IsInterfaceType() && (ptypeEnd == null || typeStart != ptypeEnd));
 
             AggregateType typeEnd = ptypeEnd;
             AggregateType typeCur;
@@ -426,7 +426,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Loop through types. Loop until we hit typeEnd (object or null).
             for (typeCur = typeStart; typeCur != typeEnd && typeCur != null; typeCur = typeCur.GetBaseClass())
             {
-                Debug.Assert(!typeCur.isInterfaceType());
+                Debug.Assert(!typeCur.IsInterfaceType());
 
                 bool fHideByName = false;
 
@@ -465,7 +465,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private bool LookupInInterfaces(AggregateType typeStart, TypeArray types)
         {
             Debug.Assert(!_swtFirst || _fMulti);
-            Debug.Assert(typeStart == null || typeStart.isInterfaceType());
+            Debug.Assert(typeStart == null || typeStart.IsInterfaceType());
             Debug.Assert(typeStart != null || types.Count != 0);
 
             // Clear all the hidden flags. Anything found in a class hides any other
@@ -479,7 +479,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             for (int i = 0; i < types.Count; i++)
             {
                 AggregateType type = types[i].AsAggregateType();
-                Debug.Assert(type.isInterfaceType());
+                Debug.Assert(type.IsInterfaceType());
                 type.fAllHidden = false;
                 type.fDiffHidden = !!_swtFirst;
             }
@@ -497,7 +497,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // Loop through the interfaces.
             for (; ;)
             {
-                Debug.Assert(typeCur != null && typeCur.isInterfaceType());
+                Debug.Assert(typeCur != null && typeCur.IsInterfaceType());
 
                 bool fHideByName = false;
 
@@ -510,7 +510,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     for (int i = 0; i < ifaces.Count; i++)
                     {
                         AggregateType type = ifaces[i].AsAggregateType();
-                        Debug.Assert(type.isInterfaceType());
+                        Debug.Assert(type.IsInterfaceType());
                         if (fHideByName)
                             type.fAllHidden = true;
                         type.fDiffHidden = true;
@@ -586,7 +586,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private bool IsDelegateType(CType pSrcType, AggregateType pAggType)
         {
             CType pInstantiatedType = GetSymbolLoader().GetTypeManager().SubstType(pSrcType, pAggType, pAggType.GetTypeArgsAll());
-            return pInstantiatedType.isDelegateType();
+            return pInstantiatedType.IsDelegateType();
         }
 
         /////////////////////////////////////////////////////////////////////////////////
@@ -663,10 +663,10 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 _flags &= ~MemLookFlags.TypeVarsAllowed;
                 ifaces = typeSrc.AsTypeParameterType().GetInterfaceBounds();
                 typeCls1 = typeSrc.AsTypeParameterType().GetEffectiveBaseClass();
-                if (ifaces.Count > 0 && typeCls1.isPredefType(PredefinedType.PT_OBJECT))
+                if (ifaces.Count > 0 && typeCls1.IsPredefType(PredefinedType.PT_OBJECT))
                     typeCls1 = null;
             }
-            else if (!typeSrc.isInterfaceType())
+            else if (!typeSrc.IsInterfaceType())
             {
                 typeCls1 = typeSrc.AsAggregateType();
 
@@ -677,7 +677,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
             else
             {
-                Debug.Assert(typeSrc.isInterfaceType());
+                Debug.Assert(typeSrc.IsInterfaceType());
                 Debug.Assert((_flags & (MemLookFlags.Ctor | MemLookFlags.NewObj | MemLookFlags.Operator | MemLookFlags.BaseCall)) == 0);
                 typeIface = typeSrc.AsAggregateType();
                 ifaces = typeIface.GetIfacesAll();
@@ -693,7 +693,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 if ((typeIface != null || ifaces.Count > 0) && LookupInInterfaces(typeIface, ifaces) && typeCls2 != null)
                 {
                     // Search object last.
-                    Debug.Assert(typeCls2 != null && typeCls2.isPredefType(PredefinedType.PT_OBJECT));
+                    Debug.Assert(typeCls2 != null && typeCls2.IsPredefType(PredefinedType.PT_OBJECT));
 
                     AggregateType result = null;
                     LookupInClass(typeCls2, ref result);
@@ -779,11 +779,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 if (_arity > 0)
                 {
-                    GetErrorContext().Error(ErrorCode.ERR_BadCtorArgCount, _typeSrc.getAggregate(), _arity);
+                    GetErrorContext().Error(ErrorCode.ERR_BadCtorArgCount, _typeSrc.GetAggregate(), _arity);
                 }
                 else
                 {
-                    GetErrorContext().Error(ErrorCode.ERR_NoConstructors, _typeSrc.getAggregate());
+                    GetErrorContext().Error(ErrorCode.ERR_NoConstructors, _typeSrc.GetAggregate());
                 }
             }
             else if ((_flags & MemLookFlags.Operator) != 0)

@@ -68,7 +68,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 }
             }
 
-            TypeArray typeVars = ats.getAggregate().GetTypeVars();
+            TypeArray typeVars = ats.GetAggregate().GetTypeVars();
             TypeArray typeArgsThis = ats.GetTypeArgsThis();
             TypeArray typeArgsAll = ats.GetTypeArgsAll();
 
@@ -89,7 +89,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             if (typeVars.Count > 0)
-                ats.fConstraintError |= !CheckConstraintsCore(checker, errHandling, ats.getAggregate(), typeVars, typeArgsThis, typeArgsAll, null, (flags & CheckConstraintsFlags.NoErrors));
+                ats.fConstraintError |= !CheckConstraintsCore(checker, errHandling, ats.GetAggregate(), typeVars, typeArgsThis, typeArgsAll, null, (flags & CheckConstraintsFlags.NoErrors));
 
             // Now check type args themselves.
             for (int i = 0; i < typeArgsThis.Count; i++)
@@ -111,7 +111,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         {
             Debug.Assert(mwi.Meth() != null && mwi.GetType() != null && mwi.TypeArgs != null);
             Debug.Assert(mwi.Meth().typeVars.Count == mwi.TypeArgs.Count);
-            Debug.Assert(mwi.GetType().getAggregate() == mwi.Meth().getClass());
+            Debug.Assert(mwi.GetType().GetAggregate() == mwi.Meth().getClass());
 
             if (mwi.TypeArgs.Count > 0)
             {
@@ -169,7 +169,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return false;
             }
 
-            if (arg.IsPointerType() || arg.isSpecialByRefType())
+            if (arg.IsPointerType() || arg.IsSpecialByRefType())
             {
                 if (fReportErrors)
                 {
@@ -179,7 +179,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return false;
             }
 
-            if (arg.isStaticClass())
+            if (arg.IsStaticClass())
             {
                 if (fReportErrors)
                 {
@@ -235,7 +235,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 }
 
                 // Since FValCon() is set it is redundant to check System.ValueType as well.
-                if (bnds.Count != 0 && bnds[0].isPredefType(PredefinedType.PT_VALUE))
+                if (bnds.Count != 0 && bnds[0].IsPredefType(PredefinedType.PT_VALUE))
                 {
                     itypeMin = 1;
                 }
@@ -269,7 +269,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         {
                             // nullable types do not satisfy bounds to every type that they are boxable to
                             // They only satisfy bounds of object and ValueType
-                            if (typeBnd.isPredefType(PredefinedType.PT_ENUM) || arg.AsNullableType().GetUnderlyingType() == typeBnd)
+                            if (typeBnd.IsPredefType(PredefinedType.PT_ENUM) || arg.AsNullableType().GetUnderlyingType() == typeBnd)
                             {
                                 // Nullable types don't satisfy bounds of EnumType, or the underlying type of the enum
                                 // even though the conversion from Nullable to these types is a boxing conversion
@@ -285,7 +285,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                                 // even when there is a boxing conversion from the Nullable type to 
                                 // the interface type. This will be a relatively common scenario
                                 // so we cal it out separately from the previous case.
-                                Debug.Assert(typeBnd.isInterfaceType());
+                                Debug.Assert(typeBnd.IsInterfaceType());
                                 error = ErrorCode.ERR_GenericConstraintNotSatisfiedNullableInterface;
                             }
                         }
@@ -313,9 +313,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return !fError;
             }
 
-            if (arg.isClassType())
+            if (arg.IsClassType())
             {
-                AggregateSymbol agg = arg.AsAggregateType().getAggregate();
+                AggregateSymbol agg = arg.AsAggregateType().GetAggregate();
 
                 // Due to late binding nature of IDE created symbols, the AggregateSymbol might not
                 // have all the information necessary yet, if it is not fully bound.
@@ -351,7 +351,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (typeBnd == arg)
                 return true;
 
-            switch (typeBnd.GetTypeKind())
+            switch (typeBnd.TypeKind)
             {
                 default:
                     Debug.Assert(false, "Unexpected type.");
@@ -378,7 +378,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             Debug.Assert(typeBnd.IsAggregateType() || typeBnd.IsTypeParameterType() || typeBnd.IsArrayType());
 
-            switch (arg.GetTypeKind())
+            switch (arg.TypeKind)
             {
                 default:
                     return false;

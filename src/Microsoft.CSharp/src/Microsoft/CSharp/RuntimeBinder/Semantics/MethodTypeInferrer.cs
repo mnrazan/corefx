@@ -195,7 +195,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 _pFixedResults[iParam] = GetTypeManager().GetErrorType(
                                         null/*pParentType*/,
                                         null,
-                                        (_pMethodTypeParameters.ItemAsTypeParameterType(iParam)).GetName(),
+                                        (_pMethodTypeParameters.ItemAsTypeParameterType(iParam)).Name,
                                         BSYMMGR.EmptyTypeArray());
             }
             return GetGlobalSymbols().AllocParams(_pMethodTypeParameters.Count, _pFixedResults);
@@ -286,7 +286,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private TypeArray GetFixedDelegateParameters(AggregateType pDelegateType)
         {
-            Debug.Assert(pDelegateType.isDelegateType());
+            Debug.Assert(pDelegateType.IsDelegateType());
 
             // We have a delegate where the input types use no unfixed parameters.  Create
             // a substitution context; we can substitute unfixed parameters for themselves
@@ -670,7 +670,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // SPEC: input types of E with CType T.
 
             pDest = pDest.GetDelegateTypeOfPossibleExpression();
-            if (!pDest.isDelegateType())
+            if (!pDest.IsDelegateType())
             {
                 return false; // No input types.
             }
@@ -719,7 +719,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // SPEC: of E with CType T.
 
             pDest = pDest.GetDelegateTypeOfPossibleExpression();
-            if (!pDest.isDelegateType())
+            if (!pDest.IsDelegateType())
             {
                 return false;
             }
@@ -1071,7 +1071,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 return false;
             }
             pType = pType.GetDelegateTypeOfPossibleExpression();
-            if (!pType.isDelegateType())
+            if (!pType.IsDelegateType())
             {
                 return false;
             }
@@ -1387,11 +1387,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 }
                 pElementDest = pArrayDest.GetElementType();
             }
-            else if (pDest.isPredefType(PredefinedType.PT_G_IENUMERABLE) ||
-                pDest.isPredefType(PredefinedType.PT_G_ICOLLECTION) ||
-                pDest.isPredefType(PredefinedType.PT_G_ILIST) ||
-                pDest.isPredefType(PredefinedType.PT_G_IREADONLYCOLLECTION) ||
-                pDest.isPredefType(PredefinedType.PT_G_IREADONLYLIST))
+            else if (pDest.IsPredefType(PredefinedType.PT_G_IENUMERABLE) ||
+                pDest.IsPredefType(PredefinedType.PT_G_ICOLLECTION) ||
+                pDest.IsPredefType(PredefinedType.PT_G_ILIST) ||
+                pDest.IsPredefType(PredefinedType.PT_G_IREADONLYCOLLECTION) ||
+                pDest.IsPredefType(PredefinedType.PT_G_IREADONLYLIST))
             {
                 if (pArraySource.rank != 1)
                 {
@@ -1465,7 +1465,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (pSource.IsAggregateType() &&
                 pSource.AsAggregateType().GetOwningAggregate() == pConstructedDest.GetOwningAggregate())
             {
-                if (pSource.isInterfaceType() || pSource.isDelegateType())
+                if (pSource.IsInterfaceType() || pSource.IsDelegateType())
                 {
                     LowerBoundTypeArgumentInference(pSource.AsAggregateType(), pConstructedDest);
                 }
@@ -1504,7 +1504,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool LowerBoundClassInference(CType pSource, AggregateType pDest)
         {
-            if (!pDest.isClassType())
+            if (!pDest.IsClassType())
             {
                 return false;
             }
@@ -1522,7 +1522,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             AggregateType pSourceBase = null;
 
-            if (pSource.isClassType())
+            if (pSource.IsClassType())
             {
                 pSourceBase = pSource.AsAggregateType().GetBaseClass();
             }
@@ -1547,7 +1547,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool LowerBoundInterfaceInference(CType pSource, AggregateType pDest)
         {
-            if (!pDest.isInterfaceType())
+            if (!pDest.IsInterfaceType())
             {
                 return false;
             }
@@ -1561,8 +1561,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             //TypeArray pInterfaces = null;
 
-            if (!pSource.isStructType() && !pSource.isClassType() &&
-                !pSource.isInterfaceType() && !pSource.IsTypeParameterType())
+            if (!pSource.IsStructType() && !pSource.IsClassType() &&
+                !pSource.IsInterfaceType() && !pSource.IsTypeParameterType())
             {
                 return false;
             }
@@ -1735,11 +1735,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 }
                 pElementSource = pArraySource.GetElementType();
             }
-            else if (pSource.isPredefType(PredefinedType.PT_G_IENUMERABLE) ||
-                pSource.isPredefType(PredefinedType.PT_G_ICOLLECTION) ||
-                pSource.isPredefType(PredefinedType.PT_G_ILIST) ||
-                pSource.isPredefType(PredefinedType.PT_G_IREADONLYLIST) ||
-                pSource.isPredefType(PredefinedType.PT_G_IREADONLYCOLLECTION))
+            else if (pSource.IsPredefType(PredefinedType.PT_G_IENUMERABLE) ||
+                pSource.IsPredefType(PredefinedType.PT_G_ICOLLECTION) ||
+                pSource.IsPredefType(PredefinedType.PT_G_ILIST) ||
+                pSource.IsPredefType(PredefinedType.PT_G_IREADONLYLIST) ||
+                pSource.IsPredefType(PredefinedType.PT_G_IREADONLYCOLLECTION))
             {
                 if (pArrayDest.rank != 1)
                 {
@@ -1788,7 +1788,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             if (pDest.IsAggregateType() &&
                 pConstructedSource.GetOwningAggregate() == pDest.AsAggregateType().GetOwningAggregate())
             {
-                if (pDest.isInterfaceType() || pDest.isDelegateType())
+                if (pDest.IsInterfaceType() || pDest.IsDelegateType())
                 {
                     UpperBoundTypeArgumentInference(pConstructedSource, pDest.AsAggregateType());
                 }
@@ -1824,7 +1824,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool UpperBoundClassInference(AggregateType pSource, CType pDest)
         {
-            if (!pSource.isClassType() || !pDest.isClassType())
+            if (!pSource.IsClassType() || !pDest.IsClassType())
             {
                 return false;
             }
@@ -1851,7 +1851,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private bool UpperBoundInterfaceInference(AggregateType pSource, CType pDest)
         {
-            if (!pSource.isInterfaceType())
+            if (!pSource.IsInterfaceType())
             {
                 return false;
             }
@@ -1861,8 +1861,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // SPEC:   or indirectly implements C<V1...Vk> then an exact ...
             // SPEC:  ... and U is an interface CType ...
 
-            if (!pDest.isStructType() && !pDest.isClassType() &&
-                !pDest.isInterfaceType())
+            if (!pDest.IsStructType() && !pDest.IsClassType() &&
+                !pDest.IsInterfaceType())
             {
                 return false;
             }

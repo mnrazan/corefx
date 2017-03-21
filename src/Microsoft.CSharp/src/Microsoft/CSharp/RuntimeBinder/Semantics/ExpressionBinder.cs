@@ -718,8 +718,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             // original tree to the cast.
 
             if (exprConst != null && exprFlags == 0 &&
-                exprSrc.type.fundType() == typeDest.fundType() &&
-                (!exprSrc.type.isPredefType(PredefinedType.PT_STRING) || exprConst.asCONSTANT().getVal().IsNullRef()))
+                exprSrc.type.FundType() == typeDest.FundType() &&
+                (!exprSrc.type.IsPredefType(PredefinedType.PT_STRING) || exprConst.asCONSTANT().getVal().IsNullRef()))
             {
                 EXPRCONSTANT expr = GetExprFactory().CreateConstant(typeDest, exprConst.asCONSTANT().getVal());
                 pexprDest = expr;
@@ -815,7 +815,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private EXPR BindToField(EXPR pOptionalObject, FieldWithType fwt, BindingFlag bindFlags, EXPR pOptionalLHS)
         {
-            Debug.Assert(fwt.GetType() != null && fwt.Field().getClass() == fwt.GetType().getAggregate());
+            Debug.Assert(fwt.GetType() != null && fwt.Field().getClass() == fwt.GetType().GetAggregate());
 
             CType pFieldType = GetTypes().SubstType(fwt.Field().GetType(), fwt.GetType());
             if (pOptionalObject != null && !pOptionalObject.isOK())
@@ -885,7 +885,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                     Name getOrCreateMethodName = GetSymbolLoader().GetNameManager().GetPredefName(PredefinedName.PN_GETORCREATEEVENTREGISTRATIONTOKENTABLE);
                     GetSymbolLoader().RuntimeBinderSymbolTable.PopulateSymbolTableWithName(getOrCreateMethodName.Text, null, fieldType.AssociatedSystemType);
-                    MethodSymbol getOrCreateMethod = GetSymbolLoader().LookupAggMember(getOrCreateMethodName, fieldType.getAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
+                    MethodSymbol getOrCreateMethod = GetSymbolLoader().LookupAggMember(getOrCreateMethodName, fieldType.GetAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
 
                     MethPropWithInst getOrCreatempwi = new MethPropWithInst(getOrCreateMethod, fieldType.AsAggregateType());
                     EXPRMEMGRP getOrCreateGrp = GetExprFactory().CreateMemGroup(null, getOrCreatempwi);
@@ -924,11 +924,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             Debug.Assert(pwt.Sym != null &&
                     pwt.Sym.IsPropertySymbol() &&
                     pwt.GetType() != null &&
-                    pwt.Prop().getClass() == pwt.GetType().getAggregate());
+                    pwt.Prop().getClass() == pwt.GetType().GetAggregate());
             Debug.Assert(pwt.Prop().Params.Count == 0 || pwt.Prop().isIndexer());
             Debug.Assert(pOtherType == null ||
                     !pwt.Prop().isIndexer() &&
-                    pOtherType.getAggregate() == pwt.Prop().RetType.getAggregate());
+                    pOtherType.GetAggregate() == pwt.Prop().RetType.GetAggregate());
 
             bool fConstrained;
             MethWithType mwtGet;
@@ -1074,7 +1074,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             CType typeSrc = arg.type;
 
         LAgain:
-            switch (typeSrc.GetTypeKind())
+            switch (typeSrc.TypeKind)
             {
                 case TypeKind.TK_NullableType:
                     typeSrc = typeSrc.StripNubs();
@@ -1083,7 +1083,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     typeSrc = typeSrc.AsTypeParameterType().GetEffectiveBaseClass();
                     goto LAgain;
                 case TypeKind.TK_AggregateType:
-                    if (!typeSrc.isClassType() && !typeSrc.isStructType() || typeSrc.AsAggregateType().getAggregate().IsSkipUDOps())
+                    if (!typeSrc.IsClassType() && !typeSrc.IsStructType() || typeSrc.AsAggregateType().GetAggregate().IsSkipUDOps())
                         return null;
                     break;
                 default:
@@ -1103,8 +1103,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 // Find the next operator.
                 methCur = (methCur == null) ?
-                          GetSymbolLoader().LookupAggMember(pName, atsCur.getAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol() :
-                          GetSymbolLoader().LookupNextSym(methCur, atsCur.getAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
+                          GetSymbolLoader().LookupAggMember(pName, atsCur.GetAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol() :
+                          GetSymbolLoader().LookupNextSym(methCur, atsCur.GetAggregate(), symbmask_t.MASK_MethodSymbol).AsMethodSymbol();
 
                 if (methCur == null)
                 {
@@ -1576,7 +1576,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
             // If it is virtual, find a remap of the method to something more specific.  This
             // may alter where the method is found.
-            if (pObject != null && (fBaseCall || pObject.type.isSimpleType() || pObject.type.isSpecialByRefType()))
+            if (pObject != null && (fBaseCall || pObject.type.IsSimpleType() || pObject.type.IsSpecialByRefType()))
             {
                 RemapToOverride(GetSymbolLoader(), pMWI, pObject.type);
             }
@@ -1605,7 +1605,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     // This is an optimization: don't call this in the vast majority of cases
                     CType type = pParams[i];
 
-                    if (type.isUnsafe())
+                    if (type.IsUnsafe())
                     {
                         checkUnsafe(type);
                     }
@@ -1663,7 +1663,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private EXPR AdjustMemberObject(SymWithType swt, EXPR pObject, out bool pfConstrained, out bool pIsMatchingStatic)
         {
             // Assert that the type is present and is an instantiation of the member's parent.
-            Debug.Assert(swt.GetType() != null && swt.GetType().getAggregate() == swt.Sym.parent.AsAggregateSymbol());
+            Debug.Assert(swt.GetType() != null && swt.GetType().GetAggregate() == swt.Sym.parent.AsAggregateSymbol());
             bool bIsMatchingStatic = IsMatchingStatic(swt, pObject);
             pIsMatchingStatic = bIsMatchingStatic;
             pfConstrained = false;
@@ -1747,19 +1747,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             {
                 AggregateSymbol aggCalled = null;
                 aggCalled = swt.Sym.parent.AsAggregateSymbol();
-                Debug.Assert(swt.GetType().getAggregate() == aggCalled);
+                Debug.Assert(swt.GetType().GetAggregate() == aggCalled);
 
                 // If we're invoking code on a struct-valued field, mark the struct as assigned (to
                 // avoid warning CS0649).
                 if (pObject.isFIELD() && !pObject.asFIELD().fwt.Field().isAssigned && !swt.Sym.IsFieldSymbol() &&
-                    typeObj.isStructType() && !typeObj.isPredefined())
+                    typeObj.IsStructType() && !typeObj.IsPredefined())
                 {
                     pObject.asFIELD().fwt.Field().isAssigned = true;
                 }
 
                 if (pfConstrained &&
                     (typeObj.IsTypeParameterType() ||
-                     typeObj.isStructType() && swt.GetType().IsRefType() && swt.Sym.IsVirtual()))
+                     typeObj.IsStructType() && swt.GetType().IsRefType() && swt.Sym.IsVirtual()))
                 {
                     // For calls on type parameters or virtual calls on struct types (not enums),
                     // use the constrained prefix.
@@ -1774,7 +1774,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // WE don't give a great message for this, but it'll do.
                 if (objNew == null)
                 {
-                    if (!pObject.type.isSpecialByRefType())
+                    if (!pObject.type.IsSpecialByRefType())
                     {
                         ErrorContext.Error(ErrorCode.ERR_WrongNestedThis, swt.GetType(), pObject.type);
                     }
@@ -1851,7 +1851,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                        // things marked as lvalues have props/fields which are lvalues, with one exception:  props of structs
                        // do not have fields/structs as lvalues
 
-                       !pObject.type.isStructOrEnum()
+                       !pObject.type.IsStructOrEnum()
                    // non-struct types are lvalues (such as non-struct method returns)
                    );
         }
@@ -1882,7 +1882,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             // Don't remap non-virtual members
-            if (!typeObj.IsAggregateType() || typeObj.isInterfaceType() || !pswt.Sym.IsVirtual())
+            if (!typeObj.IsAggregateType() || typeObj.IsInterfaceType() || !pswt.Sym.IsVirtual())
             {
                 return;
             }
@@ -1892,11 +1892,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             AggregateType atsObj = typeObj.AsAggregateType();
 
             // Search for an override version of the method.
-            while (atsObj != null && atsObj.getAggregate() != pswt.Sym.parent)
+            while (atsObj != null && atsObj.GetAggregate() != pswt.Sym.parent)
             {
-                for (Symbol symT = symbolLoader.LookupAggMember(pswt.Sym.name, atsObj.getAggregate(), mask);
+                for (Symbol symT = symbolLoader.LookupAggMember(pswt.Sym.name, atsObj.GetAggregate(), mask);
                      symT != null;
-                     symT = symbolLoader.LookupNextSym(symT, atsObj.getAggregate(), mask))
+                     symT = symbolLoader.LookupNextSym(symT, atsObj.GetAggregate(), mask))
                 {
                     if (symT.IsOverride() && (symT.SymBaseVirtual() == pswt.Sym || symT.SymBaseVirtual() == pswt.Sym.SymBaseVirtual()))
                     {
@@ -2312,47 +2312,47 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
         private static bool isConstantInRange(EXPRCONSTANT exprSrc, CType typeDest, bool realsOk)
         {
-            FUNDTYPE ftSrc = exprSrc.type.fundType();
-            FUNDTYPE ftDest = typeDest.fundType();
+            FundType ftSrc = exprSrc.type.FundType();
+            FundType ftDest = typeDest.FundType();
 
-            if (ftSrc > FUNDTYPE.FT_LASTINTEGRAL || ftDest > FUNDTYPE.FT_LASTINTEGRAL)
+            if (ftSrc > FundType.FT_LastIntergral || ftDest > FundType.FT_LastIntergral)
             {
                 if (!realsOk)
                 {
                     return false;
                 }
-                else if (ftSrc > FUNDTYPE.FT_LASTNUMERIC || ftDest > FUNDTYPE.FT_LASTNUMERIC)
+                else if (ftSrc > FundType.FT_LastNumeric || ftDest > FundType.FT_LastNumeric)
                 {
                     return false;
                 }
             }
 
             // if converting to a float type, this always succeeds...
-            if (ftDest > FUNDTYPE.FT_LASTINTEGRAL)
+            if (ftDest > FundType.FT_LastIntergral)
             {
                 return true;
             }
 
             // if converting from float to an integral type, we need to check whether it fits
-            if (ftSrc > FUNDTYPE.FT_LASTINTEGRAL)
+            if (ftSrc > FundType.FT_LastIntergral)
             {
                 double dvalue = (exprSrc.asCONSTANT().getVal().doubleVal);
 
                 switch (ftDest)
                 {
-                    case FUNDTYPE.FT_I1:
+                    case FundType.FT_I1:
                         if (dvalue > -0x81 && dvalue < 0x80)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I2:
+                    case FundType.FT_I2:
                         if (dvalue > -0x8001 && dvalue < 0x8000)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I4:
+                    case FundType.FT_I4:
                         if (dvalue > I64(-0x80000001) && dvalue < I64(0x80000000))
                             return true;
                         break;
-                    case FUNDTYPE.FT_I8:
+                    case FundType.FT_I8:
                         // 0x7FFFFFFFFFFFFFFFFFFF is rounded to 0x800000000000000000000 in 64 bit double precision
                         // floating point representation. The conversion back to ulong is not possible.
                         if (dvalue >= -9223372036854775808.0 && dvalue < 9223372036854775808.0)
@@ -2360,19 +2360,19 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                             return true;
                         }
                         break;
-                    case FUNDTYPE.FT_U1:
+                    case FundType.FT_U1:
                         if (dvalue > -1 && dvalue < 0x100)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U2:
+                    case FundType.FT_U2:
                         if (dvalue > -1 && dvalue < 0x10000)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U4:
+                    case FundType.FT_U4:
                         if (dvalue > -1 && dvalue < I64(0x100000000))
                             return true;
                         break;
-                    case FUNDTYPE.FT_U8:
+                    case FundType.FT_U8:
                         // 0xFFFFFFFFFFFFFFFFFFFF is rounded to 0x100000000000000000000 in 64 bit double precision
                         // floating point representation. The conversion back to ulong is not possible.
                         if (dvalue > -1.0 && dvalue < 18446744073709551616.0)
@@ -2387,41 +2387,41 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
             }
 
             // U8 src is unsigned, so deal with values > MAX_LONG here.
-            if (ftSrc == FUNDTYPE.FT_U8)
+            if (ftSrc == FundType.FT_U8)
             {
                 ulong value = exprSrc.asCONSTANT().getU64Value();
 
                 switch (ftDest)
                 {
-                    case FUNDTYPE.FT_I1:
+                    case FundType.FT_I1:
                         if (value <= (ulong)SByte.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I2:
+                    case FundType.FT_I2:
                         if (value <= (ulong)Int16.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I4:
+                    case FundType.FT_I4:
                         if (value <= Int32.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I8:
+                    case FundType.FT_I8:
                         if (value <= Int64.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U1:
+                    case FundType.FT_U1:
                         if (value <= Byte.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U2:
+                    case FundType.FT_U2:
                         if (value <= UInt16.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U4:
+                    case FundType.FT_U4:
                         if (value <= UInt32.MaxValue)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U8:
+                    case FundType.FT_U8:
                         return true;
                     default:
                         break;
@@ -2433,33 +2433,33 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
 
                 switch (ftDest)
                 {
-                    case FUNDTYPE.FT_I1:
+                    case FundType.FT_I1:
                         if (value >= -128 && value <= 127)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I2:
+                    case FundType.FT_I2:
                         if (value >= -0x8000 && value <= 0x7fff)
                             return true;
                         break;
-                    case FUNDTYPE.FT_I4:
+                    case FundType.FT_I4:
                         if (value >= I64(-0x80000000) && value <= I64(0x7fffffff))
                             return true;
                         break;
-                    case FUNDTYPE.FT_I8:
+                    case FundType.FT_I8:
                         return true;
-                    case FUNDTYPE.FT_U1:
+                    case FundType.FT_U1:
                         if (value >= 0 && value <= 0xff)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U2:
+                    case FundType.FT_U2:
                         if (value >= 0 && value <= 0xffff)
                             return true;
                         break;
-                    case FUNDTYPE.FT_U4:
+                    case FundType.FT_U4:
                         if (value >= 0 && value <= I64(0xffffffff))
                             return true;
                         break;
-                    case FUNDTYPE.FT_U8:
+                    case FundType.FT_U8:
                         if (value >= 0)
                             return true;
                         break;
@@ -2514,7 +2514,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         private void checkUnsafe(CType type, ErrorCode errCode, ErrArg pArg)
         {
             Debug.Assert((errCode != ErrorCode.ERR_SizeofUnsafe) || pArg != null);
-            if (type == null || type.isUnsafe())
+            if (type == null || type.IsUnsafe())
             {
                 if (!isUnsafeContext() && ReportUnsafeErrors())
                 {

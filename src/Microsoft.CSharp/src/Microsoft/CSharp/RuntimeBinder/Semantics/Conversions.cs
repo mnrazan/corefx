@@ -90,11 +90,11 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // For a type-parameter T that is known to be a reference type (§25.7), the following explicit reference conversions exist:
                 // •    From any interface-type to T.
                 // •    From T to any interface-type I provided there isn’t already an implicit reference conversion from T to I.
-                if (typeSrc.isInterfaceType() && typeDst.IsTypeParameterType())
+                if (typeSrc.IsInterfaceType() && typeDst.IsTypeParameterType())
                 {
                     return true;
                 }
-                if (typeSrc.IsTypeParameterType() && typeDst.isInterfaceType())
+                if (typeSrc.IsTypeParameterType() && typeDst.IsInterfaceType())
                 {
                     return true;
                 }
@@ -104,8 +104,8 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // * From any interface-type S to any interface-type T, provided S is not derived from T.
                 if (typeSrc.IsAggregateType() && typeDst.IsAggregateType())
                 {
-                    AggregateSymbol aggSrc = typeSrc.AsAggregateType().getAggregate();
-                    AggregateSymbol aggDest = typeDst.AsAggregateType().getAggregate();
+                    AggregateSymbol aggSrc = typeSrc.AsAggregateType().GetAggregate();
+                    AggregateSymbol aggDest = typeDst.AsAggregateType().GetAggregate();
 
                     if ((aggSrc.IsClass() && !aggSrc.IsSealed() && aggDest.IsInterface()) ||
                         (aggSrc.IsInterface() && aggDest.IsClass() && !aggDest.IsSealed()) ||
@@ -128,7 +128,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 if (typeSrc.IsArrayType())
                 {
                     if (typeSrc.AsArrayType().rank != 1 ||
-                        !typeDst.isInterfaceType() || typeDst.AsAggregateType().GetTypeArgsAll().Count != 1)
+                        !typeDst.IsInterfaceType() || typeDst.AsAggregateType().GetTypeArgsAll().Count != 1)
                     {
                         return false;
                     }
@@ -137,9 +137,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     AggregateSymbol aggIReadOnlyList = loader.GetOptPredefAgg(PredefinedType.PT_G_IREADONLYLIST);
 
                     if ((aggIList == null ||
-                        !loader.IsBaseAggregate(aggIList, typeDst.AsAggregateType().getAggregate())) &&
+                        !loader.IsBaseAggregate(aggIList, typeDst.AsAggregateType().GetAggregate())) &&
                         (aggIReadOnlyList == null ||
-                        !loader.IsBaseAggregate(aggIReadOnlyList, typeDst.AsAggregateType().getAggregate())))
+                        !loader.IsBaseAggregate(aggIReadOnlyList, typeDst.AsAggregateType().GetAggregate())))
                     {
                         return false;
                     }
@@ -161,7 +161,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     //      are the same type or there is an implicit or explicit reference conversion from S to T.
                     ArrayType arrayDest = typeDst.AsArrayType();
                     AggregateType aggtypeSrc = typeSrc.AsAggregateType();
-                    if (arrayDest.rank != 1 || !typeSrc.isInterfaceType() ||
+                    if (arrayDest.rank != 1 || !typeSrc.IsInterfaceType() ||
                         aggtypeSrc.GetTypeArgsAll().Count != 1)
                     {
                         return false;
@@ -171,9 +171,9 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     AggregateSymbol aggIReadOnlyList = loader.GetOptPredefAgg(PredefinedType.PT_G_IREADONLYLIST);
 
                     if ((aggIList == null ||
-                        !loader.IsBaseAggregate(aggIList, aggtypeSrc.getAggregate())) &&
+                        !loader.IsBaseAggregate(aggIList, aggtypeSrc.GetAggregate())) &&
                         (aggIReadOnlyList == null ||
-                        !loader.IsBaseAggregate(aggIReadOnlyList, aggtypeSrc.getAggregate())))
+                        !loader.IsBaseAggregate(aggIReadOnlyList, aggtypeSrc.GetAggregate())))
                     {
                         return false;
                     }
@@ -218,15 +218,15 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
         ***************************************************************************************************/
         public static bool HasGenericDelegateExplicitReferenceConversion(SymbolLoader loader, CType pSource, CType pTarget)
         {
-            if (!pSource.isDelegateType() ||
-                !pTarget.isDelegateType() ||
-                pSource.getAggregate() != pTarget.getAggregate() ||
+            if (!pSource.IsDelegateType() ||
+                !pTarget.IsDelegateType() ||
+                pSource.GetAggregate() != pTarget.GetAggregate() ||
                 loader.HasIdentityOrImplicitReferenceConversion(pSource, pTarget))
             {
                 return false;
             }
 
-            TypeArray pTypeParams = pSource.getAggregate().GetTypeVarsAll();
+            TypeArray pTypeParams = pSource.GetAggregate().GetTypeVarsAll();
             TypeArray pSourceArgs = pSource.AsAggregateType().GetTypeArgsAll();
             TypeArray pTargetArgs = pTarget.AsAggregateType().GetTypeArgsAll();
 

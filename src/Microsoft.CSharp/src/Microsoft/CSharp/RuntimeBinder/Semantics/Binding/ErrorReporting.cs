@@ -105,7 +105,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     }
                 }
 
-                if (pObject != null && pObject.type.isStructOrEnum())
+                if (pObject != null && pObject.type.IsStructOrEnum())
                 {
                     if (pObject.isCALL() || pObject.isPROP())
                     {
@@ -131,7 +131,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 // everything else
                 if (pObject != null && !pObject.isLvalue() && (walk.isFIELD() || (!isNested && walk.isPROP())))
                 {
-                    Debug.Assert(pObject.type.isStructOrEnum());
+                    Debug.Assert(pObject.type.IsStructOrEnum());
                     walk = pObject;
                 }
                 else

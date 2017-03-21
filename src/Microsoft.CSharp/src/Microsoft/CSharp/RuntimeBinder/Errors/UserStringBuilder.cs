@@ -541,7 +541,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                 pctx = null;
             }
 
-            switch (pType.GetTypeKind())
+            switch (pType.TypeKind)
             {
                 case TypeKind.TK_AggregateType:
                     {
@@ -549,13 +549,13 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
 
                         // Check for a predefined class with a special "nice" name for
                         // error reported.
-                        string text = PredefinedTypes.GetNiceName(pAggType.getAggregate());
+                        string text = PredefinedTypes.GetNiceName(pAggType.GetAggregate());
                         if (text != null)
                         {
                             // Found a nice name.
                             ErrAppendString(text);
                         }
-                        else if (pAggType.getAggregate().IsAnonymousType())
+                        else if (pAggType.GetAggregate().IsAnonymousType())
                         {
                             ErrAppendPrintf("AnonymousType#{0}", GetTypeID(pAggType));
                             break;
@@ -570,16 +570,16 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                             else
                             {
                                 // In a namespace.
-                                ErrAppendParentSym(pAggType.getAggregate(), pctx);
+                                ErrAppendParentSym(pAggType.GetAggregate(), pctx);
                             }
-                            ErrAppendName(pAggType.getAggregate().name);
+                            ErrAppendName(pAggType.GetAggregate().name);
                         }
                         ErrAppendTypeParameters(pAggType.GetTypeArgsThis(), pctx, true);
                         break;
                     }
 
                 case TypeKind.TK_TypeParameterType:
-                    if (null == pType.GetName())
+                    if (null == pType.Name)
                     {
                         // It's a standard type variable.
                         if (pType.AsTypeParameterType().IsMethodTypeParameter())
@@ -591,7 +591,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Errors
                     }
                     else
                     {
-                        ErrAppendName(pType.GetName());
+                        ErrAppendName(pType.Name);
                     }
                     break;
 

@@ -876,9 +876,9 @@ namespace Microsoft.CSharp.RuntimeBinder
                     return null;
                 }
 
-                if (pExpr.type.isEnumType())
+                if (pExpr.type.IsEnumType())
                 {
-                    underlyingType = underlyingType.getAggregate().GetUnderlyingType();
+                    underlyingType = underlyingType.GetAggregate().GetUnderlyingType();
                 }
 
                 switch (Type.GetTypeCode(underlyingType.AssociatedSystemType))
@@ -930,7 +930,7 @@ namespace Microsoft.CSharp.RuntimeBinder
                         break;
                 }
 
-                if (pExpr.type.isEnumType())
+                if (pExpr.type.IsEnumType())
                 {
                     objval = Enum.ToObject(pExpr.type.AssociatedSystemType, objval);
                 }

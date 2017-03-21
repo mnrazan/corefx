@@ -480,7 +480,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                                 }
                             }
                             AggregateType type = GetTypeManager().GetAggregate(agg, getBSymmgr().AllocParams(agg.GetTypeVars().Count, typeArgs));
-                            if (type.isPredefType(PredefinedType.PT_G_OPTIONAL))
+                            if (type.IsPredefType(PredefinedType.PT_G_OPTIONAL))
                             {
                                 return GetTypeManager().GetNubFromNullable(type);
                             }
