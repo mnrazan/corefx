@@ -513,7 +513,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     // According the language, this is a standard conversion, but it is implemented
                     // through a user-defined conversion. Because it's a standard conversion, we don't
                     // test the CONVERTTYPE.NOUDC flag here.
-                    CType underlyingType = aggTypeDest.UnderlyingType();
+                    CType underlyingType = aggTypeDest.underlyingType();
                     bIsConversionOK = _binder.bindUserDefinedConversion(_exprSrc, _typeSrc, underlyingType, _needsExprDest, out _exprDest, false);
 
                     if (bIsConversionOK)
@@ -531,7 +531,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                 Debug.Assert(aggTypeDest != null);
                 Debug.Assert(aggTypeDest.IsPredefType(PredefinedType.PT_DECIMAL));
 
-                AggregateType underlyingType = _typeSrc.UnderlyingType().AsAggregateType();
+                AggregateType underlyingType = _typeSrc.underlyingType().AsAggregateType();
 
                 // Need to first cast the source expr to its underlying type.
 

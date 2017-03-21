@@ -427,7 +427,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                     return Semantics.ConstValKind.Int;
             }
         }
-        public CType UnderlyingType()
+        public CType underlyingType()
         {
             if (IsAggregateType() && GetAggregate().IsEnum())
                 return GetAggregate().GetUnderlyingType();

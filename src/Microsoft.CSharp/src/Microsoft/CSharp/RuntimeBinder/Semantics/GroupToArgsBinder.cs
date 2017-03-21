@@ -601,7 +601,7 @@ namespace Microsoft.CSharp.RuntimeBinder.Semantics
                         // For enum parameters, we create a constant of the enum type. For everything
                         // else, we create the appropriate constant.
 
-                        if (pRawParamType.IsEnumType() && pConstValType == pRawParamType.UnderlyingType())
+                        if (pRawParamType.IsEnumType() && pConstValType == pRawParamType.underlyingType())
                         {
                             optionalArgument = exprFactory.CreateConstant(pRawParamType, cv);
                         }
